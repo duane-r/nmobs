@@ -14,6 +14,8 @@ local noise_rarity = 100
 local stand_and_fight = 40
 local terminal_height = 10
 
+local DEBUG
+
 
 -- These are the only legitimate properties to pass to register.
 local check = {
@@ -77,16 +79,16 @@ end
 
 -- Allow elixirs to multiply player attacks.
 local damage_multiplier = {}
-if minetest.get_modpath('elixirs') and elixirs_mod and elixirs_mod.damage_multiplier then
-  damage_multiplier = elixirs_mod.damage_multiplier
-end
+local elixirs_mod = minetest.get_modpath('elixirs')
 
 
 -- Executed by every mob, every step.
-function nmobs_mod.step(self, dtime)
+function nmobs_mod:step(dtime)
   -- Remove mobs outside of locked state.
   if self._kill_me then
-    --print('Nmobs: removing a '..self._printed_name..'.')
+    if DEBUG then
+      print('Nmobs: removing a '..self._printed_name..'.')
+    end
     self.object:remove()
     return
   end
@@ -94,7 +96,9 @@ function nmobs_mod.step(self, dtime)
   -- If the mob is locked, do not execute until the first step
   --  instance finishes.
   if self._lock then
-    --print('Nmobs: slow response')
+    if DEBUG then
+      print('Nmobs: slow response')
+    end
     return
   end
 
@@ -214,7 +218,7 @@ end
 
 
 function nmobs_mod.flee(self)  -- self._flee
-  nmobs_mod.walk_run(self, self._run_speed, 'flee', stand_and_fight, 'fighting')
+  nmobs_mod:walk_run(self._run_speed, 'flee', stand_and_fight, 'fighting')
 end
 
 
@@ -257,7 +261,7 @@ function nmobs_mod.walk(self)  -- self._walk
     end
   end
 
-  nmobs_mod.walk_run(self, self._walk_speed, 'looks_for', bored_with_walking, 'standing')
+  nmobs_mod:walk_run(self._walk_speed, 'looks_for', bored_with_walking, 'standing')
 end
 
 
@@ -308,7 +312,7 @@ end
 
 
 -- This just combines the walk/flee code, since they're very similar.
-function nmobs_mod.walk_run(self, max_speed, new_dest_type, fail_chance, fail_action)
+function nmobs_mod:walk_run(max_speed, new_dest_type, fail_chance, fail_action)
   -- the chance of tiring and stopping or fighting
   if math.random(fail_chance) == 1 then
     self._state = fail_action
@@ -386,8 +390,10 @@ function nmobs_mod.tunnel(self)  -- self._tunnel
   local next_pos = vector.round(vector.add(pos, dir))
   local nodes = minetest.find_nodes_in_area(next_pos, next_pos, self._diggable)
   if nodes and #nodes > 0 and not minetest.is_protected(next_pos, '') then
-    --local node = minetest.get_node_or_nil(next_pos)
-    --print('A '..self._printed_name..' tunnels a '..node.name..'.')
+    if DEBUG then
+      local node = minetest.get_node_or_nil(next_pos)
+      print('A '..self._printed_name..' tunnels a '..node.name..'.')
+    end
     minetest.set_node(next_pos, {name='air'})
 
     -- Move into the space.
@@ -398,14 +404,16 @@ function nmobs_mod.tunnel(self)  -- self._tunnel
 end
 
 
-function nmobs_mod.travel(self, speed)  -- self._travel
+function nmobs_mod:travel(speed)  -- self._travel
   -- Actually move the mob.
   local target
 
   -- Why doesn't this ever work?
   local path -- = minetest.find_path(pos,self._destination,10,2,2,'A*_noprefetch')
   if path then
-    print('pathing')
+    if DEBUG then
+      print('pathing')
+    end
     target = path[1]
   else
     target = self._destination
@@ -428,7 +436,7 @@ function nmobs_mod.travel(self, speed)  -- self._travel
 end
 
 
-function nmobs_mod.new_destination(self, dtype, object)  -- self._new_destination
+function nmobs_mod:new_destination(dtype, object)  -- self._new_destination
   local dest
   local minp
   local maxp
@@ -523,7 +531,7 @@ function nmobs_mod.find_prey(self)
 end
 
 
-function nmobs_mod.simple_replace(self, replaces, with)
+function nmobs_mod:simple_replace(replaces, with)
   if not (replaces and type(replaces) == 'table' and with and type(with) == 'table') then
     return
   end
@@ -542,7 +550,9 @@ function nmobs_mod.simple_replace(self, replaces, with)
         minetest.set_node(dpos, {name='air'})
         local wnode = with[math.random(#with)]
         minetest.set_node(dpos, {name=wnode})
-        --print('Nmobs: a '..self._printed_name..' replaced '..node.name..' with '..wnode..'.')
+        if DEBUG then
+          print('Nmobs: a '..self._printed_name..' replaced '..node.name..' with '..wnode..'.')
+        end
         return
       end
     end
@@ -550,7 +560,7 @@ function nmobs_mod.simple_replace(self, replaces, with)
 end
 
 
-function nmobs_mod.replace(self)  -- _replace
+function nmobs_mod:replace()  -- _replace
   if not self._replaces then
     return
   end
@@ -561,6 +571,11 @@ function nmobs_mod.replace(self)  -- _replace
 
   for _, instance in pairs(self._replaces) do
     for non_loop = 1, 1 do
+      local with = instance.with or {'air'}
+      if not type(with) == 'table' and #with > 0 then
+        break
+      end
+
       local when = instance.when or 10
       if not instance.replace or type(when) ~= 'number' or math.random(when) ~= 1 then
         break
@@ -579,18 +594,19 @@ function nmobs_mod.replace(self)  -- _replace
         end
 
         local nodes = minetest.find_nodes_in_area(minp, maxp, instance.replace)
-        local with = instance.with or {'air'}
-        if not type(with) == 'table' and #with > 0 then
-          break
-        end
 
         if nodes and #nodes > 0 then
           local dpos = nodes[math.random(#nodes)]
           if not minetest.is_protected(dpos, '') then
             local node = minetest.get_node_or_nil(dpos)
             local wnode = with[math.random(#with)]
+            if not minetest.registered_items[wnode] then
+              break
+            end
             minetest.set_node(dpos, {name=wnode})
-            --print('Nmobs: a '..self._printed_name..' replaced '..node.name..' with '..wnode..'.')
+            if DEBUG then
+              print('Nmobs: a '..self._printed_name..' replaced '..node.name..' with '..wnode..'.')
+            end
             return
           end
         end
@@ -600,7 +616,7 @@ function nmobs_mod.replace(self)  -- _replace
 end
 
 
-function nmobs_mod.take_punch(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)
+function nmobs_mod:take_punch(puncher, time_from_last_punch, tool_capabilities, dir, damage)
   local hp = self.object:get_hp()
   local bug = true -- bug in minetest code prevents damage calculation
 
@@ -627,7 +643,9 @@ function nmobs_mod.take_punch(self, puncher, time_from_last_punch, tool_capabili
         end
 
         adj_damage = adj_damage + dmg * time_frac * e_mult * (armor[grp] or 0) / 100
-        --print('Nmobs: adj_damage ('..grp..') -- '..adj_damage)
+        if DEBUG then
+          print('Nmobs: adj_damage ('..grp..') -- '..adj_damage)
+        end
       end
     end
 
@@ -635,8 +653,13 @@ function nmobs_mod.take_punch(self, puncher, time_from_last_punch, tool_capabili
       adj_damage = damage
     end
 
-    --print('Nmobs: adj_damage -- '..adj_damage)
+    if DEBUG then
+      print('Nmobs: adj_damage -- '..adj_damage)
+    end
+
+    -------------------------
     -- * display damage *
+    -------------------------
 
     adj_damage = math.floor(adj_damage + 0.5)
 
@@ -657,7 +680,7 @@ function nmobs_mod.take_punch(self, puncher, time_from_last_punch, tool_capabili
 
     if player_name and puncher:get_inventory() then
       for _, drop in ipairs(self._drops) do
-        if drop.name and (not drop.chance or math.random(1, drop.chance) == 1) then
+        if drop.name and minetest.registered_items[drop.name] and (not drop.chance or math.random(1, drop.chance) == 1) then
           puncher:get_inventory():add_item("main", ItemStack(drop.name.." "..math.random((drop.min or 1), (drop.max or 1))))
         end
       end
@@ -677,7 +700,13 @@ function nmobs_mod.take_punch(self, puncher, time_from_last_punch, tool_capabili
 end
 
 
-function nmobs_mod.activate(self, staticdata, dtime_s)
+function nmobs_mod:activate(staticdata, dtime_s)
+  -- This isn't a great place, but I want this assigned after
+  --  the game starts.
+  if elixirs_mod and elixirs and elixirs.damage_multiplier then
+    damage_multiplier = elixirs.damage_multiplier
+  end
+
   if staticdata then
     local data = minetest.deserialize(staticdata)
     if data and type(data) == 'table' then
@@ -709,7 +738,9 @@ function nmobs_mod.activate(self, staticdata, dtime_s)
     end
     self._hp = hp
     self.object:set_hp(hp)
-    --print('Nmobs: activated a '..self._printed_name..' with '..hp..' HP at ('..pos.x..','..pos.y..','..pos.z..'). Game time: '..self._born)
+    if DEBUG then
+      print('Nmobs: activated a '..self._printed_name..' with '..hp..' HP at ('..pos.x..','..pos.y..','..pos.z..'). Game time: '..self._born)
+    end
   end
 
   if self._sound then
@@ -758,7 +789,7 @@ function nmobs_mod.abm_callback(name, pos, node, active_object_count, active_obj
 end
 
 
-function nmobs_mod.on_rightclick(self, clicker)
+function nmobs_mod:on_rightclick(clicker)
   local player_name = clicker:get_player_name()
 
   if not self._tames then

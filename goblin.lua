@@ -11,11 +11,8 @@ local drops = {
   {name = "default:sword_stone", chance = 5},
   {name = "default:torch", chance = 3, max = 10},
   {name = "nmobs:glowing_fungus", chance = 3, min = 2, max = 5},
+  {name = "fun_caves:mushroom_steak", chance = 2, max = 2},
 }
-
-if minetest.registered_items['fun_caves:mushroom_steak'] then
-  drops[#drops+1] = {name = "fun_caves:mushroom_steak", chance = 2, max = 2}
-end
 
 nmobs.register_mob({
   attacks_player = true,
@@ -66,7 +63,7 @@ nmobs.register_mob({
     {
       floor = true,
       replace = {'group:cracky'},
-      with = {'nmobs:mossycobble_slimy', 'default:mossycobble', 'nmobs:glowing_fungal_stone'},
+      with = {'nmobs:mossycobble_slimy', 'default:mossycobble', 'fun_caves:glowing_fungal_stone'},
       when = 10,
     },
     {
@@ -172,36 +169,6 @@ nmobs.register_mob({
 ---------------------------------------------------------------
 -- Nodes
 ---------------------------------------------------------------
-
-
-if minetest.registered_items['underworlds:glowing_fungal_stone'] then
-  minetest.register_alias("nmobs:glowing_fungal_stone", 'underworlds:glowing_fungal_stone')
-  minetest.register_alias("nmobs:glowing_fungus", 'underworlds:glowing_fungus')
-elseif minetest.registered_items['fun_caves:glowing_fungal_stone'] then
-  minetest.register_alias("nmobs:glowing_fungal_stone", 'fun_caves:glowing_fungal_stone')
-  minetest.register_alias("nmobs:glowing_fungus", 'fun_caves:glowing_fungus')
-else
-  -- Glowing fungal stone provides an eerie light.
-  minetest.register_node("nmobs:glowing_fungal_stone", {
-    description = "Glowing Fungal Stone",
-    tiles = {"default_stone.png^vmg_glowing_fungal.png",},
-    is_ground_content = true,
-    light_source = LIGHT_MAX - 4,
-    groups = {cracky=3, stone=1},
-    drop = {items={ {items={"default:cobble"},}, {items={"fun_caves:glowing_fungus",},},},},
-    sounds = default.node_sound_stone_defaults(),
-  })
-
-  -- Glowing fungus grows underground.
-  minetest.register_craftitem("nmobs:glowing_fungus", {
-    description = "Glowing Fungus",
-    drawtype = "plantlike",
-    paramtype = "light",
-    tiles = {"vmg_glowing_fungus.png"},
-    inventory_image = "vmg_glowing_fungus.png",
-    groups = {dig_immediate = 3},
-  })
-end
 
 
 minetest.register_node("nmobs:fairy_light", {
