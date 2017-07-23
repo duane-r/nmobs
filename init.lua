@@ -3,25 +3,25 @@
 -- Distributed under the LGPLv2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
 
-nmobs_mod = {}
-nmobs = nmobs_mod
-nmobs_mod.version = "1.0"
-nmobs_mod.path = minetest.get_modpath(minetest.get_current_modname())
-nmobs_mod.world = minetest.get_worldpath()
-nmobs_mod.mobs = {}
+nmobs = {}
+nmobs = nmobs
+nmobs.version = "1.0"
+nmobs.path = minetest.get_modpath(minetest.get_current_modname())
+nmobs.world = minetest.get_worldpath()
+nmobs.mobs = {}
 
 
 local creative_mode = minetest.setting_getbool('creative_mode')
 local damage_mode = minetest.setting_getbool('enable_damage')
 
 
-nmobs_mod.nice_mobs = minetest.setting_getbool('nmobs_nice_mobs') or creative_mode or not damage_mode
-if nmobs_mod.nice_mobs == nil then
-	nmobs_mod.nice_mobs = true
+nmobs.nice_mobs = minetest.setting_getbool('nmobs_nice_mobs') or creative_mode or not damage_mode
+if nmobs.nice_mobs == nil then
+	nmobs.nice_mobs = true
 end
 
 
-if nmobs_mod.nice_mobs then
+if nmobs.nice_mobs then
   print('Nmobs: All mobs will play nicely.')
 end
 
@@ -48,14 +48,14 @@ function vector.horizontal_distance(p1, p2)
 end
 
 
-dofile(nmobs_mod.path .. "/api.lua")
-dofile(nmobs_mod.path .. "/cow.lua")
-dofile(nmobs_mod.path .. "/goat.lua")
-dofile(nmobs_mod.path .. "/pig.lua")
-dofile(nmobs_mod.path .. "/sheep.lua")
-dofile(nmobs_mod.path .. "/boulder.lua")
-dofile(nmobs_mod.path .. "/goblin.lua")
-dofile(nmobs_mod.path .. "/scorpion.lua")
-dofile(nmobs_mod.path .. "/skeleton.lua")
-dofile(nmobs_mod.path .. "/jackel_guardian.lua")
---dofile(nmobs_mod.path .. "/crystaloid1.lua")
+dofile(nmobs.path .. "/api.lua")
+dofile(nmobs.path .. "/cow.lua")
+dofile(nmobs.path .. "/goat.lua")
+dofile(nmobs.path .. "/pig.lua")
+dofile(nmobs.path .. "/sheep.lua")
+dofile(nmobs.path .. "/boulder.lua")
+dofile(nmobs.path .. "/goblin.lua")
+dofile(nmobs.path .. "/scorpion.lua")
+dofile(nmobs.path .. "/skeleton.lua")
+dofile(nmobs.path .. "/jackel_guardian.lua")
+--dofile(nmobs.path .. "/crystaloid1.lua")

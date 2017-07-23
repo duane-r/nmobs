@@ -83,7 +83,7 @@ local elixirs_mod = minetest.get_modpath('elixirs')
 
 
 -- Executed by every mob, every step.
-function nmobs_mod:step(dtime)
+function nmobs:step(dtime)
   -- Remove mobs outside of locked state.
   if self._kill_me then
     if DEBUG then
@@ -143,7 +143,7 @@ function nmobs_mod:step(dtime)
 end
 
 
-function nmobs_mod.get_pos(self)  -- self._get_pos
+function nmobs:get_pos()  -- self._get_pos
   if self._last_pos then
     return self._last_pos
   else
@@ -154,7 +154,7 @@ function nmobs_mod.get_pos(self)  -- self._get_pos
 end
 
 
-function nmobs_mod.fall(self)  -- self._fall
+function nmobs:fall()  -- self._fall
   local falling
   local grav = gravity
   local pos = self.object:get_pos()
@@ -191,7 +191,7 @@ function nmobs_mod.fall(self)  -- self._fall
 end
 
 
-function nmobs_mod.fight(self)  -- self._fight
+function nmobs:fight()  -- self._fight
   if not self._target then
     self._state = 'standing'
     return
@@ -205,7 +205,7 @@ function nmobs_mod.fight(self)  -- self._fight
     return
   elseif vector.distance(self:_get_pos(), opponent_pos) < 1 + self._reach then
     -- in punching range
-    local dir = nmobs_mod.dir_to_target(self:_get_pos(), opponent_pos) + math.random()
+    local dir = nmobs.dir_to_target(self:_get_pos(), opponent_pos) + math.random()
     self.object:set_yaw(dir)
     self.object:set_velocity(null_vector)
     self._target:punch(self.object, 1, self._weapon_capabilities, nil)
@@ -217,12 +217,12 @@ function nmobs_mod.fight(self)  -- self._fight
 end
 
 
-function nmobs_mod.flee(self)  -- self._flee
-  nmobs_mod:walk_run(self._run_speed, 'flee', stand_and_fight, 'fighting')
+function nmobs:flee()  -- self._flee
+  nmobs.walk_run(self, self._run_speed, 'flee', stand_and_fight, 'fighting')
 end
 
 
-function nmobs_mod.follow(self)  -- self._follow
+function nmobs:follow()  -- self._follow
   if not self._owner then
     self._state = 'standing'
     return
@@ -246,7 +246,7 @@ function nmobs_mod.follow(self)  -- self._follow
 end
 
 
-function nmobs_mod.walk(self)  -- self._walk
+function nmobs:walk()  -- self._walk
   if self:_aggressive_behavior() then
     return
   end
@@ -261,11 +261,11 @@ function nmobs_mod.walk(self)  -- self._walk
     end
   end
 
-  nmobs_mod:walk_run(self._walk_speed, 'looks_for', bored_with_walking, 'standing')
+  nmobs.walk_run(self, self._walk_speed, 'looks_for', bored_with_walking, 'standing')
 end
 
 
-function nmobs_mod.stand(self)  -- self._stand
+function nmobs:stand()  -- self._stand
   if self:_aggressive_behavior() then
     return
   end
@@ -287,7 +287,7 @@ function nmobs_mod.stand(self)  -- self._stand
 end
 
 
-function nmobs_mod.noise(self)  -- self._noise
+function nmobs:noise()  -- self._noise
   local odds = noise_rarity
   local sound
 
@@ -312,7 +312,7 @@ end
 
 
 -- This just combines the walk/flee code, since they're very similar.
-function nmobs_mod:walk_run(max_speed, new_dest_type, fail_chance, fail_action)
+function nmobs.walk_run(self, max_speed, new_dest_type, fail_chance, fail_action)
   -- the chance of tiring and stopping or fighting
   if math.random(fail_chance) == 1 then
     self._state = fail_action
@@ -371,7 +371,7 @@ function nmobs_mod:walk_run(max_speed, new_dest_type, fail_chance, fail_action)
 end
 
 
-function nmobs_mod.tunnel(self)  -- self._tunnel
+function nmobs:tunnel()  -- self._tunnel
   local pos = self:_get_pos()
   self._chose_destination = minetest.get_gametime()
 
@@ -404,7 +404,7 @@ function nmobs_mod.tunnel(self)  -- self._tunnel
 end
 
 
-function nmobs_mod:travel(speed)  -- self._travel
+function nmobs:travel(speed)  -- self._travel
   -- Actually move the mob.
   local target
 
@@ -420,7 +420,7 @@ function nmobs_mod:travel(speed)  -- self._travel
   end
 
   local pos = self:_get_pos()
-  local dir = nmobs_mod.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
+  local dir = nmobs.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
 
   local v = {x=0, y=0, z=0}
   self.object:set_yaw(dir)
@@ -436,7 +436,7 @@ function nmobs_mod:travel(speed)  -- self._travel
 end
 
 
-function nmobs_mod:new_destination(dtype, object)  -- self._new_destination
+function nmobs:new_destination(dtype, object)  -- self._new_destination
   local dest
   local minp
   local maxp
@@ -492,7 +492,7 @@ function nmobs_mod:new_destination(dtype, object)  -- self._new_destination
 end
 
 
-function nmobs_mod.dir_to_target(pos, target)
+function nmobs.dir_to_target(pos, target)
   local direction = vector.direction(pos, target)
 
   local dir = (math.atan(direction.z / direction.x) + math.pi / 2)
@@ -504,8 +504,8 @@ function nmobs_mod.dir_to_target(pos, target)
 end
 
 
-function nmobs_mod.aggressive_behavior(self)  -- self._aggressive_behavior
-  if self._attacks_player and not self._owner and not nmobs_mod.nice_mobs then
+function nmobs:aggressive_behavior()  -- self._aggressive_behavior
+  if self._attacks_player and not self._owner and not nmobs.nice_mobs then
     local prey = self:_find_prey()
     if prey then
       self._target = prey
@@ -516,7 +516,7 @@ function nmobs_mod.aggressive_behavior(self)  -- self._aggressive_behavior
 end
 
 
-function nmobs_mod.find_prey(self)
+function nmobs:find_prey()
   local prey = {}
 
   for _, player in pairs(minetest.get_connected_players()) do
@@ -531,7 +531,7 @@ function nmobs_mod.find_prey(self)
 end
 
 
-function nmobs_mod:simple_replace(replaces, with)
+function nmobs:simple_replace(replaces, with)
   if not (replaces and type(replaces) == 'table' and with and type(with) == 'table') then
     return
   end
@@ -560,7 +560,7 @@ function nmobs_mod:simple_replace(replaces, with)
 end
 
 
-function nmobs_mod:replace()  -- _replace
+function nmobs:replace()  -- _replace
   if not self._replaces then
     return
   end
@@ -616,7 +616,7 @@ function nmobs_mod:replace()  -- _replace
 end
 
 
-function nmobs_mod:take_punch(puncher, time_from_last_punch, tool_capabilities, dir, damage)
+function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir, damage)
   local hp = self.object:get_hp()
   local bug = true -- bug in minetest code prevents damage calculation
 
@@ -627,7 +627,7 @@ function nmobs_mod:take_punch(puncher, time_from_last_punch, tool_capabilities, 
     e_mult = damage_multiplier[player_name] or 1
   end
 
-  if nmobs_mod.nice_mobs or self._owner then
+  if nmobs.nice_mobs or self._owner then
     return true
   end
 
@@ -700,7 +700,7 @@ function nmobs_mod:take_punch(puncher, time_from_last_punch, tool_capabilities, 
 end
 
 
-function nmobs_mod:activate(staticdata, dtime_s)
+function nmobs:activate(staticdata, dtime_s)
   -- This isn't a great place, but I want this assigned after
   --  the game starts.
   if elixirs_mod and elixirs and elixirs.damage_multiplier then
@@ -748,13 +748,13 @@ function nmobs_mod:activate(staticdata, dtime_s)
   end
 end
 
-function nmobs_mod.get_staticdata(self)
+function nmobs:get_staticdata()
   local data = {}
 
   self._hp = self.object:get_hp()
 
   for k, d in pairs(self) do
-    if k:find('^_') and not skip_serializing[k] and not nmobs_mod.mobs[self._name][k] then
+    if k:find('^_') and not skip_serializing[k] and not nmobs.mobs[self._name][k] then
       data[k] = d
     end
   end
@@ -763,8 +763,8 @@ function nmobs_mod.get_staticdata(self)
 end
 
 
-function nmobs_mod.abm_callback(name, pos, node, active_object_count, active_object_count_wider)
-  local proto = nmobs_mod.mobs[name]
+function nmobs.abm_callback(name, pos, node, active_object_count, active_object_count_wider)
+  local proto = nmobs.mobs[name]
   if proto.lower_than and pos.y >= proto.lower_than then
     return
   end
@@ -789,7 +789,7 @@ function nmobs_mod.abm_callback(name, pos, node, active_object_count, active_obj
 end
 
 
-function nmobs_mod:on_rightclick(clicker)
+function nmobs:on_rightclick(clicker)
   local player_name = clicker:get_player_name()
 
   if not self._tames then
@@ -827,7 +827,7 @@ function nmobs_mod:on_rightclick(clicker)
 end
 
 
-function nmobs_mod.register_mob(def)
+function nmobs.register_mob(def)
   local good_def = {}
 
   -- Check for legitimate properties.
@@ -946,65 +946,65 @@ function nmobs_mod.register_mob(def)
   local proto = {
     collide_with_objects = true,
     collisionbox = cbox,
-    get_staticdata = nmobs_mod.get_staticdata,
+    get_staticdata = nmobs.get_staticdata,
     hp_max = 2,
     hp_min = 1,
-    on_activate = nmobs_mod.activate,
-    on_step = nmobs_mod.step,
-    on_punch = nmobs_mod.take_punch,
-    on_rightclick = nmobs_mod.on_rightclick,
+    on_activate = nmobs.activate,
+    on_step = nmobs.step,
+    on_punch = nmobs.take_punch,
+    on_rightclick = nmobs.on_rightclick,
     physical = true,
     stepheight = good_def.step_height or 1.1,
     textures = {'nmobs:'..name..'_block',},
     visual = 'wielditem',
     visual_size = sz,
-    _aggressive_behavior = good_def._aggressive_behavior or nmobs_mod.aggressive_behavior,
+    _aggressive_behavior = good_def._aggressive_behavior or nmobs.aggressive_behavior,
     _armor_groups = good_def.armor,
     _attacks_player = good_def.attacks_player,
     _damage = good_def.damage,
     _diurnal = good_def.diurnal,
     _drops = good_def.drops or {},
     _environment = good_def.environment,
-    _fall = good_def._fall or nmobs_mod.fall,
-    _fight = good_def._fight or nmobs_mod.fight,
-    _find_prey = good_def._find_prey or nmobs_mod.find_prey,
-    _flee = good_def._flee or nmobs_mod.flee,
-    _follow = good_def._follow or nmobs_mod.follow,
+    _fall = good_def._fall or nmobs.fall,
+    _fight = good_def._fight or nmobs.fight,
+    _find_prey = good_def._find_prey or nmobs.find_prey,
+    _flee = good_def._flee or nmobs.flee,
+    _follow = good_def._follow or nmobs.follow,
     _fly = good_def.fly,
-    _get_pos = good_def._get_pos or nmobs_mod.get_pos,
+    _get_pos = good_def._get_pos or nmobs.get_pos,
     _hit_dice = (good_def.hit_dice or 1),
     _is_a_mob = true,
     _last_step = 0,
     _lifespan = (good_def.lifespan or 200),
     _looks_for = good_def.looks_for,
     _name = name,
-    _new_destination = good_def._new_destination or nmobs_mod.new_destination,
+    _new_destination = good_def._new_destination or nmobs.new_destination,
     _nocturnal = good_def.nocturnal,
-    _noise = good_def._noise or nmobs_mod.noise,
+    _noise = good_def._noise or nmobs.noise,
     _printed_name = name:gsub('_', ' '),
     _rarity = (good_def.rarity or 20000),
     _reach = (good_def.reach or 1),
-    _replace = good_def._replace or nmobs_mod.replace,
+    _replace = good_def._replace or nmobs.replace,
     _replaces = good_def.replaces,
     _run_speed = (good_def.run_speed or 3),
     _sound = good_def.sound,
     _sound_angry = good_def.sound_angry,
     _sound_scared = good_def.sound_scared,
     _spawn_table = good_def.spawn,
-    _stand = good_def._stand or nmobs_mod.stand,
+    _stand = good_def._stand or nmobs.stand,
     _state = 'standing',
     _tames = good_def.tames,
     _target = nil,
-    _travel = good_def._travel or nmobs_mod.travel,
-    _tunnel = good_def._tunnel or nmobs_mod.tunnel,
+    _travel = good_def._travel or nmobs.travel,
+    _tunnel = good_def._tunnel or nmobs.tunnel,
     _diggable = good_def.can_dig,
     _vision = (good_def.vision or 15),
-    _walk = good_def._walk or nmobs_mod.walk,
+    _walk = good_def._walk or nmobs.walk,
     _walk_speed = (good_def.walk_speed or 1),
     _weapon_capabilities = good_def.weapon_capabilities,
   }
 
-  nmobs_mod.mobs[name] = proto
+  nmobs.mobs[name] = proto
 
   local reg_name = proto.textures[1]
   if not reg_name:find('^:') then
@@ -1022,7 +1022,7 @@ function nmobs_mod.register_mob(def)
         chance = (instance.rarity or 20000),
         catch_up = false,
         action = function(...)
-          nmobs_mod.abm_callback(name, ...)
+          nmobs.abm_callback(name, ...)
         end,
       })
     end
@@ -1034,7 +1034,7 @@ function nmobs_mod.register_mob(def)
       chance = proto._rarity,
       catch_up = false,
       action = function(...)
-        nmobs_mod.abm_callback(name, ...)
+        nmobs.abm_callback(name, ...)
       end,
     })
   end
