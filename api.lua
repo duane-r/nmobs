@@ -19,6 +19,7 @@ local DEBUG
 
 -- These are the only legitimate properties to pass to register.
 local check = {
+  {'animation', 'table', false},
   {'armor_class', 'number', false},
   {'attacks_player', 'boolean', false},
   {'collisionbox', 'table', false},
@@ -33,8 +34,9 @@ local check = {
   {'lower_than', 'number', false},
   {'lifespan', 'number', false},
   {'media_prefix', 'string', false},
+  {'mesh', 'string', false},
   {'name', 'string', true},
-  {'nodebox', 'table', true},
+  {'nodebox', 'table', false},
   {'nocturnal', 'boolean', false},
   {'rarity', 'number', false},
   {'reach', 'number', false},
@@ -123,6 +125,7 @@ function nmobs:step(dtime)
   end
 
   self._last_step = 0
+  local old_state = self._state
 
   if self._state == 'fighting' then
     self:_fight()
@@ -138,8 +141,24 @@ function nmobs:step(dtime)
 
   self:_noise()
 
+  if self._animation and self._state ~= old_state then
+    self:_change_animation()
+  end
+
+
   self._lock = nil
   self._last_pos = nil
+end
+
+
+function nmobs:change_animation()
+  if self._state == 'fleeing' and self._animation.run then
+    self.object:set_animation({x=self._animation.run.start, y=self._animation.run.stop}, self._animation.run.speed or 15, 0, not self._animation.run.noloop)
+  elseif (self._state == 'traveling' or self._state == 'following') and self._animation.walk then
+    self.object:set_animation({x=self._animation.walk.start, y=self._animation.walk.stop}, self._animation.walk.speed or 15, 0, not self._animation.walk.noloop)
+  elseif self._animation.stand then
+    self.object:set_animation({x=self._animation.stand.start, y=self._animation.stand.stop}, self._animation.stand.speed or 15, 0, not self._animation.stand.noloop)
+  end
 end
 
 
@@ -728,6 +747,10 @@ function nmobs:activate(staticdata, dtime_s)
     self.object:set_hp(self._hp)
   end
 
+  self.object:set_properties({
+    textures = self.textures[math.random(#self.textures)],
+  })
+
   if not self._born then
     self._born = minetest.get_gametime()
     local pos = vector.round(self.object:get_pos())
@@ -872,38 +895,50 @@ function nmobs.register_mob(def)
     good_def.textures = t
   end
 
-  local node = {
-    drawtype = 'nodebox',
-    node_box = {
-      type = 'fixed',
-      fixed = good_def.nodebox,
-    },
-    tiles = good_def.textures,
-  }
+  if good_def.nodebox then
+    local node = {
+      drawtype = 'nodebox',
+      node_box = {
+        type = 'fixed',
+        fixed = good_def.nodebox,
+      },
+      tiles = good_def.textures,
+    }
+
+    local reg_name = 'nmobs:'..name..'_block'
+    if not reg_name:find('^:') then
+      reg_name = reg_name:gsub('^', ':')
+    end
+    minetest.register_node(reg_name, node)
+  end
 
   -- Make a useful collision box.
   local cbox = good_def.collisionbox
   if not cbox then
-    -- measure nodebox
-    cbox = {999, 999, 999, -999, -999, -999} 
-    for _, box in pairs(good_def.nodebox) do
-      for i = 1, 3 do
-        if box[i] < cbox[i] then
-          cbox[i] = box[i]
+    if good_def.nodebox then
+      -- measure nodebox
+      cbox = {999, 999, 999, -999, -999, -999} 
+      for _, box in pairs(good_def.nodebox) do
+        for i = 1, 3 do
+          if box[i] < cbox[i] then
+            cbox[i] = box[i]
+          end
+        end
+        for i = 4, 6 do
+          if box[i] > cbox[i] then
+            cbox[i] = box[i]
+          end
         end
       end
-      for i = 4, 6 do
-        if box[i] > cbox[i] then
-          cbox[i] = box[i]
-        end
-      end
+      -- Since the collision box doesn't turn with the mob,
+      --  make it the average of the z and x dimentions.
+      cbox[1] = (cbox[1] + cbox[3]) / 2
+      cbox[4] = (cbox[4] + cbox[6]) / 2
+      cbox[3] = cbox[1]
+      cbox[6] = cbox[4]
+    else
+      cbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5} 
     end
-    -- Since the collision box doesn't turn with the mob,
-    --  make it the average of the z and x dimentions.
-    cbox[1] = (cbox[1] + cbox[3]) / 2
-    cbox[4] = (cbox[4] + cbox[6]) / 2
-    cbox[3] = cbox[1]
-    cbox[6] = cbox[4]
   end
 
   local sz = {x=0.66, y=0.66, z=0.66}  -- Why aren't objects the same size as nodes?
@@ -955,12 +990,14 @@ function nmobs.register_mob(def)
     on_rightclick = nmobs.on_rightclick,
     physical = true,
     stepheight = good_def.step_height or 1.1,
-    textures = {'nmobs:'..name..'_block',},
+    textures = { {'nmobs:'..name..'_block'}, },
     visual = 'wielditem',
     visual_size = sz,
     _aggressive_behavior = good_def._aggressive_behavior or nmobs.aggressive_behavior,
+    _animation = good_def.animation,
     _armor_groups = good_def.armor,
     _attacks_player = good_def.attacks_player,
+    _change_animation = good_def.change_animation or nmobs.change_animation,
     _damage = good_def.damage,
     _diurnal = good_def.diurnal,
     _drops = good_def.drops or {},
@@ -1004,13 +1041,13 @@ function nmobs.register_mob(def)
     _weapon_capabilities = good_def.weapon_capabilities,
   }
 
-  nmobs.mobs[name] = proto
-
-  local reg_name = proto.textures[1]
-  if not reg_name:find('^:') then
-    reg_name = reg_name:gsub('^', ':')
+  if good_def.mesh and good_def.textures then
+    proto.visual = 'mesh'
+    proto.mesh = good_def.mesh
+    proto.textures = good_def.textures
   end
-  minetest.register_node(reg_name, node)
+
+  nmobs.mobs[name] = proto
   minetest.register_entity(':nmobs:'..name, proto)
 
   if proto._spawn_table then
