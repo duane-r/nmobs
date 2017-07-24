@@ -9,6 +9,9 @@
 
 nmobs.register_mob({
   diurnal = true,
+  drops = {
+    {name = 'mobs:meat_raw',},
+  },
   hit_dice = 1,
   looks_for = {'default:dirt_with_grass'},
   name = 'goat',

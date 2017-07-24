@@ -49,6 +49,7 @@ end
 
 
 dofile(nmobs.path .. "/api.lua")
+dofile(nmobs.path .. "/nodes.lua")
 dofile(nmobs.path .. "/cow.lua")
 dofile(nmobs.path .. "/goat.lua")
 dofile(nmobs.path .. "/pig.lua")

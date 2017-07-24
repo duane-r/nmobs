@@ -8,6 +8,9 @@
 nmobs.register_mob({
   attacks_player = true,
   armor_class = 8,
+  drops = {
+    {name = 'bonemeal:bone',},
+  },
   hit_dice = 3,
   looks_for = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow', 'default:desert_sand'},
   name = 'skeleton',
@@ -30,6 +33,7 @@ nmobs.register_mob({
     {0.31, 0.21, 0.24, 0.24, 0.23, 0.32}, -- righthand
   },
   nocturnal = true,
+  reach = 2,
   size = 2,
   --tames = {'farming:wheat'},
 })

@@ -8,22 +8,28 @@
 
 do
   local def = {
-    attacks_player = true,
-    armor_class = 6,
-    hit_dice = 6,
-    looks_for = {'default:dirt_with_grass'},
-    name = 'bear',
-    mesh = "kpg_bear.x",
-    textures = {
-      {"kpg_bear.png"},
-    },
-    size = 2,
-    collisionbox = {-0.4, -0.01, -0.4, 0.4, 1, 0.4},
     animation = {
       punch = {start = 70, stop = 100},
       run = {start = 105, stop = 135},
       stand = {start = 0, stop = 15, noloop = true},
       walk = {start = 35, stop = 65},
+    },
+    attacks_player = true,
+    armor_class = 6,
+    collisionbox = {-0.4, -0.01, -0.4, 0.4, 1, 0.4},
+    damage = 2,
+    drops = {
+      {name = 'mobs:meat_raw',},
+      {name = 'mobs:fur',},
+    },
+    hit_dice = 6,
+    looks_for = {'default:dirt_with_grass'},
+    name = 'bear',
+    mesh = "kpg_bear.x",
+    reach = 2,
+    size = 2,
+    textures = {
+      {"kpg_bear.png"},
     },
   }
 

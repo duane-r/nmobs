@@ -11,19 +11,22 @@
 
 do
   local def = {
+    animation = {
+      punch = {start = 36, stop = 51},
+      run = {start = 1, stop = 16},
+      stand = {start = 51, stop = 60, speed = 4},
+      walk = {start = 25, stop = 35, speed = 6},
+    },
+    collisionbox = {-0.4, -0.4, -0.4, 0.3, 0.3, 0.3},
+    drops = {
+      {name = 'mobs:fur',},
+    },
     hit_dice = 1,
     looks_for = {'default:dirt_with_grass'},
     name = 'fox',
     mesh = "fox.b3d",
     textures = {
       {"dmobs_fox.png"},
-    },
-    collisionbox = {-0.4, -0.4, -0.4, 0.3, 0.3, 0.3},
-    animation = {
-      punch = {start = 36, stop = 51},
-      run = {start = 1, stop = 16},
-      stand = {start = 51, stop = 60, speed = 4},
-      walk = {start = 25, stop = 35, speed = 6},
     },
   }
 
