@@ -217,7 +217,7 @@ minetest.register_node("nmobs:mossycobble_slimy", {
 	description = "Messy Gobblestone",
 	tiles = {"default_mossycobble.png"},
 	is_ground_content = false,
-	groups = {cracky = 2, stone = 1, trap = 1},
+	groups = {cracky = 2, stone = 1, trap = 1, slippery_floor_trap = 1},
 	sounds = default.node_sound_stone_defaults(),
 	paramtype = "light",
 	light_source =  4,
@@ -232,8 +232,35 @@ minetest.register_craft({
 minetest.register_node("nmobs:stone_with_coal_trap", {
 	description = "Coal Trap",
 	tiles = {"default_cobble.png^default_mineral_coal.png"},
-	groups = {cracky = 3, trap = 1},
+	groups = {cracky = 3, trap = 1, fire_trap = 1},
 	drop = 'default:coal_lump',
+	is_ground_content = false,
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("nmobs:stone_with_copper_trap", {
+	description = "Copper Trap",
+	tiles = {"default_cobble.png^default_mineral_copper.png"},
+	groups = {cracky = 3, trap = 1, electricity_trap = 1},
+	drop = 'default:copper_lump',
+	is_ground_content = false,
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("nmobs:stone_with_diamond_trap", {
+	description = "Diamond Trap",
+	tiles = {"default_cobble.png^default_mineral_diamond.png"},
+	groups = {cracky = 3, trap = 1, explosive_trap = 1},
+	drop = 'default:diamond_lump',
+	is_ground_content = false,
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("nmobs:stone_with_gold_trap", {
+	description = "Gold Trap",
+	tiles = {"default_cobble.png^default_mineral_gold.png"},
+	groups = {cracky = 3, trap = 1, lava_trap = 1},
+	drop = 'default:gold_lump',
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
 })
