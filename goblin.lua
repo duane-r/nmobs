@@ -55,6 +55,26 @@ nmobs.register_mob({
     --  when = 10,
     --},
     {
+      replace = {'default:stone_with_coal'},
+      with = {'nmobs:stone_with_coal_trap',},
+      when = 2,
+    },
+    {
+      replace = {'default:stone_with_copper'},
+      with = {'nmobs:stone_with_copper_trap',},
+      when = 2,
+    },
+    {
+      replace = {'default:stone_with_gold'},
+      with = {'nmobs:stone_with_gold_trap',},
+      when = 2,
+    },
+    {
+      replace = {'default:stone_with_diamond'},
+      with = {'nmobs:stone_with_diamond_trap',},
+      when = 2,
+    },
+    {
       floor = true,
       replace = {'air'},
       with = {'default:dirt'},
@@ -133,6 +153,26 @@ nmobs.register_mob({
     --  with = {'air'},
     --  when = 10,
     --},
+    {
+      replace = {'default:stone_with_coal'},
+      with = {'nmobs:stone_with_coal_trap',},
+      when = 2,
+    },
+    {
+      replace = {'default:stone_with_copper'},
+      with = {'nmobs:stone_with_copper_trap',},
+      when = 2,
+    },
+    {
+      replace = {'default:stone_with_gold'},
+      with = {'nmobs:stone_with_gold_trap',},
+      when = 2,
+    },
+    {
+      replace = {'default:stone_with_diamond'},
+      with = {'nmobs:stone_with_diamond_trap',},
+      when = 2,
+    },
     {
       floor = true,
       replace = {'air'},
