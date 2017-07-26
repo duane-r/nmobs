@@ -14,7 +14,7 @@ local noise_rarity = 100
 local stand_and_fight = 40
 local terminal_height = 10
 
-local DEBUG = true
+local DEBUG
 
 
 -- These are the only legitimate properties to pass to register.

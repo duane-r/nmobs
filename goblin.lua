@@ -211,6 +211,7 @@ nmobs.register_mob({
 ---------------------------------------------------------------
 
 
+local mushrooms = {"flowers:mushroom_brown", "flowers:mushroom_red"}
 minetest.register_node("nmobs:fairy_light", {
 	description = "Fairy Light",
 	drawtype = "plantlike",
@@ -223,23 +224,12 @@ minetest.register_node("nmobs:fairy_light", {
 	diggable = false,
 	pointable = false,
 	is_ground_content = false,
-})
-
-
-local mushrooms = {"flowers:mushroom_brown", "flowers:mushroom_red"}
-minetest.register_abm({
-	nodenames = {"nmobs:fairy_light",},
-	interval = 30,
-	chance = 30,
-  catch_up = true,
-	action = function(pos, node)
-		if not (pos and node) then
-			return
-		end
-
-    local pos_down = table.copy(pos)
-    pos_down.y = pos_down.y - 1
-    local node_down = minetest.get_node_or_nil(pos_down)
+  on_construct = function(pos)
+    local timer = minetest.get_node_timer(pos)
+    timer:set(math.random(100, 300), 0)
+  end,
+  on_timer = function(pos, elapsed)
+    local node_down = minetest.get_node_or_nil({x=pos.x, y=pos.y, z=pos.z})
     if node_down and node_down.name == 'default:dirt' then
       minetest.set_node(pos, {name=mushrooms[math.random(#mushrooms)]})
     else
