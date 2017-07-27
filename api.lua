@@ -7,7 +7,7 @@
 -- ant/termite
 
 
-local bored_with_standing = 20
+local bored_with_standing = 10
 local bored_with_walking = 20
 local gravity = -10
 local noise_rarity = 100
@@ -474,6 +474,10 @@ function nmobs:new_destination(dtype, object)  -- self._new_destination
     if not self._tether then
       minp = vector.subtract(pos, 10)
       maxp = vector.add(pos, 10)
+      if not self._fly then
+        minp.y = pos.y - 3
+        maxp.y = pos.y + 3
+      end
     end
 
     local nodes = minetest.find_nodes_in_area(minp, maxp, self._looks_for)
@@ -487,6 +491,10 @@ function nmobs:new_destination(dtype, object)  -- self._new_destination
       local toward = vector.add(pos, vector.direction(opos, pos))
       minp = vector.subtract(toward, 15)
       maxp = vector.add(toward, 15)
+      if not self._fly then
+        minp.y = pos.y - 3
+        maxp.y = pos.y + 3
+      end
     end
 
     local nodes = minetest.find_nodes_in_area_under_air(minp, maxp, nonliquids)
@@ -499,6 +507,10 @@ function nmobs:new_destination(dtype, object)  -- self._new_destination
     if not self._tether then
       minp = vector.subtract(pos, 15)
       maxp = vector.add(pos, 15)
+      if not self._fly then
+        minp.y = pos.y - 3
+        maxp.y = pos.y + 3
+      end
     end
 
     local nodes = minetest.find_nodes_in_area_under_air(minp, maxp, nonliquids)

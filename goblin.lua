@@ -14,6 +14,90 @@ local drops = {
   {name = "fun_caves:mushroom_steak", chance = 2, max = 2},
 }
 
+local function goblin_travel(self, speed)
+  local pos = self:_get_pos()
+  if self._destination and self._destination.y >= pos.y - 1 then
+    local dir = vector.direction(pos, self._destination)
+    local next_pos = vector.add(pos, dir)
+    next_pos.y = math.min(next_pos.y, pos.y) - 1
+    next_pos = vector.round(next_pos)
+    local n = minetest.get_node_or_nil(next_pos)
+    if n and n.name == 'air' then
+      minetest.set_node(next_pos, {name='default:dirt'})
+      nmobs.travel(self, 0.5)
+      return
+    end
+  end
+
+  nmobs.travel(self, speed)
+end
+
+local function goblin_replace(self)
+  local pos = self:_get_pos()
+  local minp = vector.subtract(pos, self._reach + 1)
+  local maxp = vector.add(pos, self._reach + 1)
+
+  local ns = minetest.find_nodes_in_area(minp, maxp, {'default:stone_with_coal', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_diamond'})
+  if ns and #ns > 0 then
+    local p = ns[math.random(#ns)]
+    local n = minetest.get_node_or_nil(p)
+    if n then
+      local r = n.name:gsub('^default', 'nmobs'):gsub('$', '_trap')
+      minetest.set_node(p, {name=r})
+      return
+    end
+  end
+
+  if math.random(5) == 1 then
+    ns = minetest.find_nodes_in_area(minp, maxp, {'fun_caves:giant_mushroom_stem'})
+    if ns and #ns > 0 then
+      local pl
+      for _, p in pairs(ns) do
+        if not pl or pl.y > p.y then
+          pl = p
+        end
+      end
+      for i = 1, 3 do
+        local n = minetest.get_node_or_nil(pl)
+        if n and (n.name == 'fun_caves:giant_mushroom_stem' or n.name == 'fun_caves:giant_mushroom_cap' or n.name == 'fun_caves:huge_mushroom_cap') then
+          minetest.remove_node(pl)
+          pl.y = pl.y + 1
+        end
+      end
+
+      return
+    end
+  end
+
+  if math.random(5) == 1 then
+    local p = minetest.find_node_near(pos, self._reach + 1, {'air'})
+    if p then
+      minetest.set_node(p, {name='nmobs:fairy_light'})
+    end
+
+    return
+  end
+
+  if math.random(5) == 1 then
+    local p = {x=pos.x, y=pos.y-1, z=pos.z}
+    local n = minetest.get_node_or_nil(p)
+    if n and minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].groups.cracky then
+      local sr = math.random(4)
+      if sr == 1 then
+        minetest.set_node(p, {name='nmobs:mossycobble_slimy'})
+      elseif sr == 2 then
+        minetest.set_node(p, {name='default:dirt'})
+      elseif sr == 3 and minetest.registered_nodes['fun_caves:glowing_fungal_stone'] then
+        minetest.set_node(p, {name='fun_caves:glowing_fungal_stone'})
+      else
+        minetest.set_node(p, {name='default:mossycobble'})
+      end
+    elseif n and minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].groups.soil then
+      minetest.set_node(pos, {name='flowers:mushroom_brown'})
+    end
+  end
+end
+
 nmobs.register_mob({
   attacks_player = true,
   can_dig = {'group:cracky', 'group:crumbly'},
@@ -48,50 +132,8 @@ nmobs.register_mob({
     {-0.4375, -0.375, 0.0625, -0.375, 0.125, 0.125}, -- leftarm2
     {0.375, -0.375, 0.0625, 0.4375, 0.125, 0.125}, -- rightarm2
   },
-  replaces = {
-    --{
-    --  replace = {'group:cracky', 'group:choppy', 'group:snappy'},
-    --  with = {'air'},
-    --  when = 10,
-    --},
-    {
-      replace = {'default:stone_with_coal'},
-      with = {'nmobs:stone_with_coal_trap',},
-      when = 2,
-    },
-    {
-      replace = {'default:stone_with_copper'},
-      with = {'nmobs:stone_with_copper_trap',},
-      when = 2,
-    },
-    {
-      replace = {'default:stone_with_gold'},
-      with = {'nmobs:stone_with_gold_trap',},
-      when = 2,
-    },
-    {
-      replace = {'default:stone_with_diamond'},
-      with = {'nmobs:stone_with_diamond_trap',},
-      when = 2,
-    },
-    {
-      floor = true,
-      replace = {'air'},
-      with = {'default:dirt'},
-      when = 10,
-    },
-    {
-      floor = true,
-      replace = {'group:cracky'},
-      with = {'nmobs:mossycobble_slimy', 'default:mossycobble', 'fun_caves:glowing_fungal_stone'},
-      when = 10,
-    },
-    {
-      replace = {'air'},
-      with = {'nmobs:fairy_light'},
-      when = 20,
-    },
-  },
+  _travel = goblin_travel,
+  _replace = goblin_replace,
   size = 0.7,
   spawn = {
     {
@@ -99,7 +141,7 @@ nmobs.register_mob({
       rarity = 20000,
     },
     {
-      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
+      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy', 'flowers:mushroom_brown'},
       rarity = 1000,
     },
   },
@@ -147,50 +189,8 @@ nmobs.register_mob({
     {-0.4375, -0.375, 0.0625, -0.375, 0.125, 0.125}, -- leftarm2
     {0.375, -0.375, 0.0625, 0.4375, 0.125, 0.125}, -- rightarm2
   },
-  replaces = {
-    --{
-    --  replace = {'group:cracky', 'group:choppy', 'group:snappy'},
-    --  with = {'air'},
-    --  when = 10,
-    --},
-    {
-      replace = {'default:stone_with_coal'},
-      with = {'nmobs:stone_with_coal_trap',},
-      when = 2,
-    },
-    {
-      replace = {'default:stone_with_copper'},
-      with = {'nmobs:stone_with_copper_trap',},
-      when = 2,
-    },
-    {
-      replace = {'default:stone_with_gold'},
-      with = {'nmobs:stone_with_gold_trap',},
-      when = 2,
-    },
-    {
-      replace = {'default:stone_with_diamond'},
-      with = {'nmobs:stone_with_diamond_trap',},
-      when = 2,
-    },
-    {
-      floor = true,
-      replace = {'air'},
-      with = {'default:dirt'},
-      when = 10,
-    },
-    {
-      floor = true,
-      replace = {'group:cracky'},
-      with = {'nmobs:mossycobble_slimy', 'default:mossycobble', 'nmobs:glowing_fungal_stone'},
-      when = 10,
-    },
-    {
-      replace = {'air'},
-      with = {'nmobs:fairy_light'},
-      when = 20,
-    },
-  },
+  _travel = goblin_travel,
+  _replace = goblin_replace,
   size = 0.8,
   spawn = {
     {
@@ -198,7 +198,7 @@ nmobs.register_mob({
       rarity = 50000,
     },
     {
-      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
+      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy', 'flowers:mushroom_brown'},
       rarity = 1000,
     },
   },
