@@ -229,17 +229,17 @@ nmobs.register_mob({
 
 local mushrooms = {"flowers:mushroom_brown", "flowers:mushroom_red"}
 minetest.register_node("nmobs:fairy_light", {
-	description = "Fairy Light",
-	drawtype = "plantlike",
-	visual_scale = 0.75,
-	tiles = {"nmobs_fairy_light.png"},
-	paramtype = "light",
-	sunlight_propagates = true,
-	light_source = 8,
-	walkable = false,
-	diggable = false,
-	pointable = false,
-	is_ground_content = false,
+  description = "Fairy Light",
+  drawtype = "plantlike",
+  visual_scale = 0.75,
+  tiles = {"nmobs_fairy_light.png"},
+  paramtype = "light",
+  sunlight_propagates = true,
+  light_source = 8,
+  walkable = false,
+  diggable = false,
+  pointable = false,
+  is_ground_content = false,
   on_construct = function(pos)
     local timer = minetest.get_node_timer(pos)
     local max = 3 * (fun_caves.time_factor or 10)
@@ -254,7 +254,7 @@ minetest.register_node("nmobs:fairy_light", {
     else
       minetest.remove_node(pos)
     end
-	end,
+  end,
 })
 
 
@@ -263,53 +263,53 @@ minetest.register_node("nmobs:fairy_light", {
 ---------------------------------------------------------------
 
 minetest.register_node("nmobs:mossycobble_slimy", {
-	description = "Messy Gobblestone",
-	tiles = {"default_mossycobble.png"},
-	is_ground_content = false,
-	groups = {cracky = 2, stone = 1, trap = 1, slippery_floor_trap = 1},
-	sounds = default.node_sound_stone_defaults(),
-	paramtype = "light",
-	light_source =  4,
+  description = "Messy Gobblestone",
+  tiles = {"default_mossycobble.png"},
+  is_ground_content = false,
+  groups = {cracky = 2, stone = 1, trap = 1, slippery_floor_trap = 1},
+  sounds = default.node_sound_stone_defaults(),
+  paramtype = "light",
+  light_source =  4,
 })
 
 minetest.register_craft({
-	type = "cooking",
-	output = "default:stone",
-	recipe = "nmobs:mossycobble_trap",
+  type = "cooking",
+  output = "default:stone",
+  recipe = "nmobs:mossycobble_trap",
 })
 
 minetest.register_node("nmobs:stone_with_coal_trap", {
-	description = "Coal Trap",
-	tiles = {"default_cobble.png^default_mineral_coal.png"},
-	groups = {cracky = 3, trap = 1, fire_trap = 1},
-	drop = 'default:coal_lump',
-	is_ground_content = false,
-	sounds = default.node_sound_stone_defaults(),
+  description = "Coal Trap",
+  tiles = {"default_cobble.png^default_mineral_coal.png"},
+  groups = {cracky = 3, trap = 1, fire_trap = 1},
+  drop = 'default:coal_lump',
+  is_ground_content = false,
+  sounds = default.node_sound_stone_defaults(),
 })
 
 minetest.register_node("nmobs:stone_with_copper_trap", {
-	description = "Copper Trap",
-	tiles = {"default_cobble.png^default_mineral_copper.png"},
-	groups = {cracky = 3, trap = 1, electricity_trap = 1},
-	drop = 'default:copper_lump',
-	is_ground_content = false,
-	sounds = default.node_sound_stone_defaults(),
+  description = "Copper Trap",
+  tiles = {"default_cobble.png^default_mineral_copper.png"},
+  groups = {cracky = 3, trap = 1, electricity_trap = 1},
+  drop = 'default:copper_lump',
+  is_ground_content = false,
+  sounds = default.node_sound_stone_defaults(),
 })
 
 minetest.register_node("nmobs:stone_with_diamond_trap", {
-	description = "Diamond Trap",
-	tiles = {"default_cobble.png^default_mineral_diamond.png"},
-	groups = {cracky = 3, trap = 1, explosive_trap = 1},
-	drop = 'default:diamond_lump',
-	is_ground_content = false,
-	sounds = default.node_sound_stone_defaults(),
+  description = "Diamond Trap",
+  tiles = {"default_cobble.png^default_mineral_diamond.png"},
+  groups = {cracky = 3, trap = 1, explosive_trap = 1},
+  drop = 'default:diamond_lump',
+  is_ground_content = false,
+  sounds = default.node_sound_stone_defaults(),
 })
 
 minetest.register_node("nmobs:stone_with_gold_trap", {
-	description = "Gold Trap",
-	tiles = {"default_cobble.png^default_mineral_gold.png"},
-	groups = {cracky = 3, trap = 1, lava_trap = 1},
-	drop = 'default:gold_lump',
-	is_ground_content = false,
-	sounds = default.node_sound_stone_defaults(),
+  description = "Gold Trap",
+  tiles = {"default_cobble.png^default_mineral_gold.png"},
+  groups = {cracky = 3, trap = 1, lava_trap = 1},
+  drop = 'default:gold_lump',
+  is_ground_content = false,
+  sounds = default.node_sound_stone_defaults(),
 })
