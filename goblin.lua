@@ -48,7 +48,7 @@ local function goblin_replace(self)
     end
   end
 
-  if math.random(5) == 1 then
+  if math.random(3) == 1 then
     ns = minetest.find_nodes_in_area(minp, maxp, {'fun_caves:giant_mushroom_stem'})
     if ns and #ns > 0 then
       local pl
@@ -65,6 +65,14 @@ local function goblin_replace(self)
         end
       end
 
+      return
+    end
+  end
+
+  if minetest.get_modpath('fun_caves') and math.random(20) == 1 then
+    ns = minetest.find_nodes_in_area(minp, maxp, {'group:fungal_tree'})
+    if ns and #ns > 0 then
+      minetest.set_node(ns[math.random(#ns)], {name = 'fire:basic_flame'})
       return
     end
   end
@@ -141,7 +149,11 @@ nmobs.register_mob({
       rarity = 20000,
     },
     {
-      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy', 'flowers:mushroom_brown'},
+      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'fun_caves:giant_mushroom_cap', 'fun_caves:fungal_tree_leaves_1', 'fun_caves:fungal_tree_leaves_2', 'fun_caves:fungal_tree_leaves_3', 'fun_caves:fungal_tree_leaves_4'},
+      rarity = 5000,
+    },
+    {
+      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
       rarity = 1000,
     },
   },
@@ -198,7 +210,11 @@ nmobs.register_mob({
       rarity = 50000,
     },
     {
-      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy', 'flowers:mushroom_brown'},
+      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'fun_caves:giant_mushroom_cap', 'fun_caves:fungal_tree_leaves_1', 'fun_caves:fungal_tree_leaves_2', 'fun_caves:fungal_tree_leaves_3', 'fun_caves:fungal_tree_leaves_4'},
+      rarity = 5000,
+    },
+    {
+      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
       rarity = 1000,
     },
   },
@@ -219,17 +235,20 @@ minetest.register_node("nmobs:fairy_light", {
 	tiles = {"nmobs_fairy_light.png"},
 	paramtype = "light",
 	sunlight_propagates = true,
-	light_source = 4,
+	light_source = 8,
 	walkable = false,
 	diggable = false,
 	pointable = false,
 	is_ground_content = false,
   on_construct = function(pos)
     local timer = minetest.get_node_timer(pos)
-    timer:set(math.random(100, 300), 0)
+    local max = 3 * (fun_caves.time_factor or 10)
+    if timer then
+      timer:set(max, max > 1 and math.random(max - 1) or 0)
+    end
   end,
   on_timer = function(pos, elapsed)
-    local node_down = minetest.get_node_or_nil({x=pos.x, y=pos.y, z=pos.z})
+    local node_down = minetest.get_node_or_nil({x=pos.x, y=pos.y-1, z=pos.z})
     if node_down and node_down.name == 'default:dirt' then
       minetest.set_node(pos, {name=mushrooms[math.random(#mushrooms)]})
     else
