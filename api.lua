@@ -300,7 +300,7 @@ function nmobs:stand()  -- self._stand
       self._state = 'traveling'
       return
     else
-      print('Nmobs: Error finding destination')
+      --print('Nmobs: Error finding destination')
     end
   end
 end
@@ -339,20 +339,6 @@ function nmobs.walk_run(self, max_speed, new_dest_type, fail_chance, fail_action
   end
 
   local pos = self:_get_pos()
-
-  if self._destination then
-    local velocity = self.object:get_velocity()
-    local actual_speed = vector.horizontal_length(velocity)
-
-    if actual_speed < 0.5 and minetest.get_gametime() - self._chose_destination > 1.5 then
-      -- We've hit an obstacle.
-      if not self._diggable then
-        self._destination = nil
-      elseif self:_tunnel() then
-        return
-      end
-    end
-  end
 
   if not self._destination then
     self._destination = self:_new_destination(new_dest_type, self._target)
@@ -406,14 +392,20 @@ function nmobs:tunnel()  -- self._tunnel
   dir.y = self._destination.y > pos.y and (math.random(2) - 1) or 0
 
   -- Check if the node can be dug.
-  local next_pos = vector.round(vector.add(pos, dir))
-  local nodes = minetest.find_nodes_in_area(next_pos, next_pos, self._diggable)
-  if nodes and #nodes > 0 and not minetest.is_protected(next_pos, '') then
+  local next_pos = vector.add(pos, dir)
+  local nodes = minetest.find_nodes_in_area(vector.subtract(next_pos, self._reach - 1), vector.add(next_pos, self._reach - 1), self._diggable)
+  if nodes and #nodes > 0 then
+    local p = nodes[math.random(#nodes)]
+    if minetest.is_protected(p, '') then
+      return
+    end
+
     if DEBUG then
-      local node = minetest.get_node_or_nil(next_pos)
+      local node = minetest.get_node_or_nil(p)
       print('A '..self._printed_name..' tunnels a '..node.name..'.')
     end
-    minetest.set_node(next_pos, {name='air'})
+
+    minetest.set_node(p, {name='air'})
 
     -- Move into the space.
     dir.y = 0
@@ -440,6 +432,20 @@ function nmobs:travel(speed)  -- self._travel
 
   local pos = self:_get_pos()
   local dir = nmobs.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
+
+  do
+    local velocity = self.object:get_velocity()
+    local actual_speed = vector.horizontal_length(velocity)
+
+    if actual_speed < 0.5 and minetest.get_gametime() - self._chose_destination > 1.5 then
+      -- We've hit an obstacle.
+      if not self._diggable then
+        self._destination = nil
+      elseif self:_tunnel() then
+        return
+      end
+    end
+  end
 
   local v = {x=0, y=0, z=0}
   self.object:set_yaw(dir)
@@ -540,6 +546,7 @@ function nmobs:aggressive_behavior()  -- self._aggressive_behavior
     local prey = self:_find_prey()
     if prey then
       self._target = prey
+      self._chose_destination = minetest.get_gametime()
       self._state = 'fighting'
       return true
     end
@@ -719,6 +726,7 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
   end
 
   self._target = puncher
+  self._chose_destination = minetest.get_gametime()
   if puncher and puncher:is_player() and vector.distance(self:_get_pos(), puncher:get_pos()) > self._vision then
     self._state = 'fleeing'
   elseif hp < damage * 2 then
@@ -820,6 +828,9 @@ function nmobs.abm_callback(name, pos, node, active_object_count, active_object_
   if node_above and node_above.name == 'air' and active_object_count < 3 then
     pos_above.y = pos_above.y + 2
     minetest.add_entity(pos_above, 'nmobs:'..name)
+    if DEBUG then
+      print('Nmobs: adding '..name)
+    end
   end
 end
 
