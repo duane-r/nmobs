@@ -5,13 +5,16 @@
 -- The nodebox and textures are distributed as Public Domain (WTFPL).
 
 
+nmobs.time_factor = 10
+
+
 local drops = {
   {name = "default:mossycobble", chance = 2, max = 3},
   {name = "default:pick_stone", chance = 3, max = 3},
   {name = "default:sword_stone", chance = 5},
   {name = "default:torch", chance = 3, max = 10},
   {name = "nmobs:glowing_fungus", chance = 3, min = 2, max = 5},
-  {name = "fun_caves:mushroom_steak", chance = 2, max = 2},
+  {name = "squaresville_c:mushroom_steak", chance = 2, max = 2},
 }
 
 local function goblin_travel(self, speed)
@@ -49,7 +52,7 @@ local function goblin_replace(self)
   end
 
   if math.random(3) == 1 then
-    ns = minetest.find_nodes_in_area(minp, maxp, {'fun_caves:giant_mushroom_stem'})
+    ns = minetest.find_nodes_in_area(minp, maxp, {'squaresville_c:giant_mushroom_stem'})
     if ns and #ns > 0 then
       local pl
       for _, p in pairs(ns) do
@@ -59,7 +62,7 @@ local function goblin_replace(self)
       end
       for i = 1, 3 do
         local n = minetest.get_node_or_nil(pl)
-        if n and (n.name == 'fun_caves:giant_mushroom_stem' or n.name == 'fun_caves:giant_mushroom_cap' or n.name == 'fun_caves:huge_mushroom_cap') then
+        if n and (n.name == 'squaresville_c:giant_mushroom_stem' or n.name == 'squaresville_c:giant_mushroom_cap' or n.name == 'squaresville_c:huge_mushroom_cap') then
           minetest.remove_node(pl)
           pl.y = pl.y + 1
         end
@@ -69,6 +72,7 @@ local function goblin_replace(self)
     end
   end
 
+  --[[
   if minetest.get_modpath('fun_caves') and math.random(20) == 1 then
     ns = minetest.find_nodes_in_area(minp, maxp, {'group:fungal_tree'})
     if ns and #ns > 0 then
@@ -76,6 +80,7 @@ local function goblin_replace(self)
       return
     end
   end
+  --]]
 
   if math.random(5) == 1 then
     local p = minetest.find_node_near(pos, self._reach + 1, {'air'})
@@ -95,8 +100,8 @@ local function goblin_replace(self)
         minetest.set_node(p, {name='nmobs:mossycobble_slimy'})
       elseif sr == 2 then
         minetest.set_node(p, {name='default:dirt'})
-      elseif sr == 3 and minetest.registered_nodes['fun_caves:glowing_fungal_stone'] then
-        minetest.set_node(p, {name='fun_caves:glowing_fungal_stone'})
+      elseif sr == 3 and minetest.registered_nodes['squaresville_c:glowing_fungal_stone'] then
+        minetest.set_node(p, {name='squaresville_c:glowing_fungal_stone'})
       else
         minetest.set_node(p, {name='default:mossycobble'})
       end
@@ -111,7 +116,7 @@ nmobs.register_mob({
   can_dig = {'group:cracky', 'group:crumbly'},
   drops = drops,
   hit_dice = 2,
-  looks_for = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', 'fun_caves:giant_mushroom_stem'},
+  looks_for = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', 'squaresville_c:giant_mushroom_stem'},
   name = 'goblin',
   nocturnal = true,
   nodebox = {
@@ -145,11 +150,11 @@ nmobs.register_mob({
   size = 0.7,
   spawn = {
     {
-      nodes = {'default:stone', 'fun_caves:stone_with_algae', 'fun_caves:stone_with_lichen', 'squaresville:concrete', 'squaresville:road', 'squaresville:sidewalk', 'squaresville:floor_ceiling', 'squaresville:concrete_broken', 'squaresville:road_broken', 'squaresville:sidewalk_broken', 'squaresville:floor_ceiling_broken'},
+      nodes = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville:concrete', 'squaresville:road', 'squaresville:sidewalk', 'squaresville:floor_ceiling', 'squaresville:concrete_broken', 'squaresville:road_broken', 'squaresville:sidewalk_broken', 'squaresville:floor_ceiling_broken'},
       rarity = 20000,
     },
     {
-      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'fun_caves:giant_mushroom_cap', 'fun_caves:fungal_tree_leaves_1', 'fun_caves:fungal_tree_leaves_2', 'fun_caves:fungal_tree_leaves_3', 'fun_caves:fungal_tree_leaves_4'},
+      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'squaresville_c:giant_mushroom_cap', 'squaresville_c:fungal_tree_leaves_1', 'squaresville_c:fungal_tree_leaves_2', 'squaresville_c:fungal_tree_leaves_3', 'squaresville_c:fungal_tree_leaves_4'},
       rarity = 5000,
     },
     {
@@ -172,7 +177,7 @@ nmobs.register_mob({
   can_dig = {'group:cracky', 'group:crumbly'},
   drops = drops,
   hit_dice = 4,
-  looks_for = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', 'fun_caves:giant_mushroom_stem'},
+  looks_for = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', 'squaresville_c:giant_mushroom_stem'},
   name = 'goblin basher',
   nocturnal = true,
   nodebox = {
@@ -206,11 +211,11 @@ nmobs.register_mob({
   size = 0.8,
   spawn = {
     {
-      nodes = {'default:stone', 'fun_caves:stone_with_algae', 'fun_caves:stone_with_lichen', 'squaresville:concrete', 'squaresville:road', 'squaresville:sidewalk', 'squaresville:floor_ceiling', 'squaresville:concrete_broken', 'squaresville:road_broken', 'squaresville:sidewalk_broken', 'squaresville:floor_ceiling_broken'},
+      nodes = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville:concrete', 'squaresville:road', 'squaresville:sidewalk', 'squaresville:floor_ceiling', 'squaresville:concrete_broken', 'squaresville:road_broken', 'squaresville:sidewalk_broken', 'squaresville:floor_ceiling_broken'},
       rarity = 50000,
     },
     {
-      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'fun_caves:giant_mushroom_cap', 'fun_caves:fungal_tree_leaves_1', 'fun_caves:fungal_tree_leaves_2', 'fun_caves:fungal_tree_leaves_3', 'fun_caves:fungal_tree_leaves_4'},
+      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'squaresville_c:giant_mushroom_cap', 'squaresville_c:fungal_tree_leaves_1', 'squaresville_c:fungal_tree_leaves_2', 'squaresville_c:fungal_tree_leaves_3', 'squaresville_c:fungal_tree_leaves_4'},
       rarity = 5000,
     },
     {
@@ -242,7 +247,7 @@ minetest.register_node("nmobs:fairy_light", {
   is_ground_content = false,
   on_construct = function(pos)
     local timer = minetest.get_node_timer(pos)
-    local max = 3 * (fun_caves.time_factor or 10)
+    local max = 3 * (nmobs.time_factor or 10)
     if timer then
       timer:set(max, max > 1 and math.random(max - 1) or 0)
     end
