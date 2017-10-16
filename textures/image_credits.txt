@@ -13,3 +13,7 @@ https://forum.minetest.net/viewtopic.php?f=9&t=8798&hilit=kpgmobs
 Zombie textures are taken from Nathan's Zombies
 and distributed under the CC by SA 3.0 license.
 https://forum.minetest.net/viewtopic.php?f=9&t=14187&hilit=nathan+zombies
+
+Meat and leather textures are taken from TenPlus1's mobs_redo
+and distributed under the MIT license.
+https://forum.minetest.net/viewtopic.php?f=11&t=9917
