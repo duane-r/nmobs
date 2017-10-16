@@ -44,12 +44,8 @@ do
     size = 1.5,
     spawn = {
       {
-        nodes = {'squaresville:floor_ceiling_broken', 'squaresville:floor_ceiling'},
-        rarity = 15000,
-      },
-      {
-        nodes = {'squaresville:road_broken', 'squaresville:road'},
-        rarity = 1000,
+        nodes = {'default:dirt', 'default:cobble'},
+        rarity = 5000,
       },
     },
     textures = tex,
