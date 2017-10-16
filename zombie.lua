@@ -11,16 +11,6 @@ do
     tex[#tex+1] = { 'zombie0'..i..'.png' }
   end
 
-  local concrete = { }
-  for i = 2, 5 do
-    concrete[#concrete+1] = 'squaresville:concrete'..i
-    concrete[#concrete+1] = concrete[#concrete]..'_broken'
-  end
-  concrete[#concrete+1] = 'squaresville:plate_glass'
-  concrete[#concrete+1] = 'squaresville:plate_glass_broken'
-  concrete[#concrete+1] = 'squaresville:floor_ceiling'
-  concrete[#concrete+1] = 'squaresville:floor_ceiling_broken'
-
   nmobs.register_mob({
     animation = {
       punch = {start = 102, stop = 142, speed = 20},
@@ -30,7 +20,7 @@ do
     },
     attacks_player = true,
     armor_class = 8,
-    can_dig = concrete,
+    --can_dig = concrete,
     collisionbox = {-0.3, -0.7, -0.3, 0.3, 0.5, 0.3},
     --drops = {
     --  {name = 'bonemeal:bone',},

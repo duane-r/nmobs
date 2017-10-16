@@ -35,10 +35,10 @@ nmobs.register_mob({
     {-0.1875, 0, 0.25, -0.125, 0.375, 0.3125},
     {0.125, 0, 0.25, 0.1875, 0.375, 0.3125},
   },
-  spawns = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow'},
   replaces = {
     {
       replace = {'group:snappy', 'group:wood'},
     }
   },
+  spawns = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow'},
 })
