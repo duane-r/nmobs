@@ -6,7 +6,12 @@
 --  children's fable in which a child-like stump adopted by a childless
 --  couple comes to life and devours them and their neighbors.
 
--- The nodebox and textures are distributed as Public Domain (WTFPL).
+-- The nodebox is distributed as Public Domain (WTFPL).
+
+-- Textures are based on minetest textures,
+-- Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+-- Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0).
+-- http://creativecommons.org/licenses/by-sa/3.0/
 
 
 nmobs.register_mob({
