@@ -74,6 +74,7 @@ do
 	def3.textures = { {"fun_caves_spider_ice.png"}, }
 
   local def4 = table.copy(def1)
+  def4.attacks_player = nil
   def4.damage = 1
   def4.drops = { {name = "mobs:meat_raw"}, }
   def4.environment = { 'default:desert_stone', 'default:desert_sand' }

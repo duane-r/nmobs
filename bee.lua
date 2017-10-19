@@ -17,7 +17,7 @@ do
     collisionbox = { -0.2, -0.01, -0.2, 0.2, 0.2, 0.2 },
     drops = { { name = "mobs:honey", chance = 2, max = 2, } },
     environment = { 'group:flower', },
-    hit_dice = 1,
+    hit_dice = 0.5,
     mesh = 'mobs_bee.x',
     name = 'bee',
     sound = 'mobs_bee',

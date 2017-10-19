@@ -20,7 +20,7 @@ nmobs.register_mob({
   drops = {
     {name = 'default:wood',},
   },
-  environment = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow'},
+  environment = {'default:leaves', 'default:pine_needles', 'default:dirt_with_rainforest_litter'},
   hit_dice = 3,
   looks_for = {'group:snappy', 'group:wood'},
   name = 'otik',

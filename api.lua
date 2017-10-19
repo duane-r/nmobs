@@ -232,12 +232,17 @@ function nmobs:fight()  -- self._fight
     local dir = nmobs.dir_to_target(self:_get_pos(), opponent_pos) + math.random()
     self.object:set_yaw(dir)
     self.object:set_velocity(null_vector)
-    self._target:punch(self.object, 1, self._weapon_capabilities, nil)
+    self:_punch(self._target, 1, self._weapon_capabilities)
   else
     -- chasing
     self._destination = self._target:get_pos()
     self:_travel(self._run_speed)
   end
+end
+
+
+function nmobs:punch(target, delay, capabilities)  -- self._punch
+  target:punch(self.object, delay, capabilities, nil)
 end
 
 
@@ -794,6 +799,7 @@ function nmobs:activate(staticdata, dtime_s)
 
   self.object:set_properties({
     textures = self.textures[math.random(#self.textures)],
+    --stepheight = self.stepheight,
   })
 
   if not self._born then
@@ -988,6 +994,15 @@ function nmobs.register_mob(def)
       cbox[4] = (cbox[4] + cbox[6]) / 2
       cbox[3] = cbox[1]
       cbox[6] = cbox[4]
+
+      local add = 0.3 - (cbox[5] - cbox[2])
+      if add > 0 then
+        if cbox[5] < 0.5 - add then
+          cbox[5] = cbox[5] + add
+        elseif cbox[2] > -0.5 + add then
+          cbox[2] = cbox[2] - add
+        end
+      end
     else
       cbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5} 
     end
@@ -1072,6 +1087,7 @@ function nmobs.register_mob(def)
     _nocturnal = good_def.nocturnal,
     _noise = good_def._noise or nmobs.noise,
     _printed_name = name:gsub('_', ' '),
+    _punch = good_def._punch or nmobs.punch,
     _rarity = (good_def.rarity or 20000),
     _reach = (good_def.reach or 1),
     _replace = good_def._replace or nmobs.replace,

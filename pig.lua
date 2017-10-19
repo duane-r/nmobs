@@ -10,7 +10,7 @@
 nmobs.register_mob({
   diurnal = true,
   drops = { {name = 'mobs:meat_raw',}, },
-  environment = {'default:dirt_with_grass'},
+  environment = {'default:dirt_with_grass', 'default:dirt_with_rainforest_litter'},
   hit_dice = 1,
   media_prefix = 'ccmobs',
   name = 'pig',
