@@ -64,7 +64,12 @@ do
     _punch = function(self, target, delay, capabilities)
       if minetest.global_exists("status_mod") and status_mod.registered_status and status_mod.registered_status['poisoned'] and target.get_player_name then
         local player_name = target:get_player_name()
-        if not player_name then
+        local armor = target:get_armor_groups()
+        if not (player_name and armor) then
+          return
+        end
+
+        if armor['fleshy'] and math.random(100) > armor['fleshy'] then
           return
         end
 
