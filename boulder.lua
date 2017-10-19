@@ -17,8 +17,8 @@ nmobs.register_mob({
     {name = 'default:diamond', chance = 8},
     {name = 'default:mese_crystal_fragment', chance = 10},
   },
+  environment = {'default:stone', 'fun_caves:stone_with_moss'},
   hit_dice = 4,
-  looks_for = {'default:stone', 'fun_caves:stone_with_moss'},
   name = 'boulder',
   nodebox = {
     {-0.35, -0.35, -0.35, 0.35, 0.35, 0.35},

@@ -18,11 +18,9 @@ do
       walk = {start = 25, stop = 35, speed = 6},
     },
     collisionbox = {-0.4, -0.4, -0.4, 0.3, 0.3, 0.3},
-    drops = {
-      {name = 'mobs:fur',},
-    },
+    drops = { {name = 'mobs:fur',}, },
+    environment = {'default:dirt_with_grass'},
     hit_dice = 1,
-    looks_for = {'default:dirt_with_grass'},
     name = 'fox',
     mesh = "fox.b3d",
     textures = {

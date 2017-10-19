@@ -15,13 +15,9 @@ do
     },
     armor_class = 7,
     collisionbox = { -0.2, -0.01, -0.2, 0.2, 0.2, 0.2 },
-    drops = {
-      { name = "mobs:honey", chance = 2, max = 2, }
-    },
+    drops = { { name = "mobs:honey", chance = 2, max = 2, } },
+    environment = { 'group:flower', },
     hit_dice = 1,
-    looks_for = {
-      'group:flower',
-    },
     mesh = 'mobs_bee.x',
     name = 'bee',
     sound = 'mobs_bee',

@@ -13,8 +13,8 @@ nmobs.register_mob({
     {name = 'mobs:meat_raw',},
     {name = 'mobs:leather',},
   },
+  environment = {'default:dirt_with_grass'},
   hit_dice = 3,
-  looks_for = {'default:dirt_with_grass'},
   media_prefix = 'ccmobs',
   name = 'cow',
   nodebox = {

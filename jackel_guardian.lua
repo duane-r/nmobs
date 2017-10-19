@@ -8,9 +8,9 @@
 nmobs.register_mob({
   attacks_player = true,
   armor_class = 6,
+  environment = {'default:stoneblock'},
   fly = true,
   hit_dice = 5,
-  looks_for = {'zigg:ziggurat_1'},
   name = 'jackel guardian',
   nodebox = {
     {-0.04, 0.34375, -0.0625, 0.04, 0.42, 0.03}, -- head

@@ -17,11 +17,9 @@ do
     attacks_player = true,
     collisionbox = { -0.36, -0.4, -0.36, 0.36, 0.36, 0.36 },
     damage = 7,
-    drops = {
-      { name = "mobs:meat_raw", min = 4, max = 8, }
-    },
+    drops = { { name = "mobs:meat_raw", min = 4, max = 8, } },
+    environment = { 'default:dirt_with_dry_grass', },
     hit_dice = 10,
-    looks_for = { 'default:dirt_with_dry_grass', },
     mesh = 'elephant.b3d',
     name = 'elephant',
     reach = 3,

@@ -8,11 +8,9 @@
 nmobs.register_mob({
   attacks_player = true,
   armor_class = 5,
-  drops = {
-    {name = 'mobs:meat_raw', chance = 3,},
-  },
+  drops = { {name = 'mobs:meat_raw', chance = 3,}, },
+  environment = {'default:desert_sand'},
   hit_dice = 3,
-  looks_for = {'default:desert_sand'},
   name = 'scorpion',
   nocturnal = true,
   nodebox = {

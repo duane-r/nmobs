@@ -159,6 +159,8 @@ function nmobs:change_animation()  -- self:_change_animation
     self.object:set_animation({x=self._animation.run.start, y=self._animation.run.stop}, self._animation.run.speed or 15, 0, not self._animation.run.noloop)
   elseif (self._state == 'traveling' or self._state == 'following') and self._animation.walk then
     self.object:set_animation({x=self._animation.walk.start, y=self._animation.walk.stop}, self._animation.walk.speed or 15, 0, not self._animation.walk.noloop)
+  elseif (self._state == 'fighting') and self._animation.walk then
+    self.object:set_animation({x=self._animation.walk.start, y=self._animation.walk.stop}, self._animation.walk.speed or 15, 0, not self._animation.walk.noloop)
   elseif self._animation.stand then
     self.object:set_animation({x=self._animation.stand.start, y=self._animation.stand.stop}, self._animation.stand.speed or 15, 0, not self._animation.stand.noloop)
   end

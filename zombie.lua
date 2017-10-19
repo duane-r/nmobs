@@ -25,8 +25,8 @@ do
     --drops = {
     --  {name = 'bonemeal:bone',},
     --},
+    environment = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow', 'default:desert_sand'},
     hit_dice = 3,
-    looks_for = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow', 'default:desert_sand'},
     mesh = "zombie_normal.b3d",
     name = 'zombie',
     reach = 2,

@@ -9,11 +9,9 @@
 
 nmobs.register_mob({
   diurnal = true,
-  drops = {
-    {name = 'mobs:meat_raw',},
-  },
+  drops = { {name = 'mobs:meat_raw',}, },
+  environment = {'default:dirt_with_grass'},
   hit_dice = 1,
-  looks_for = {'default:dirt_with_grass'},
   name = 'goat',
   nodebox = {
     {-0.203072, -0.3125, -0.453246, 0.200683, 0, 0.0131549},

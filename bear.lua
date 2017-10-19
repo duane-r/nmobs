@@ -7,7 +7,7 @@
 
 
 do
-  local def = {
+  local def1 = {
     animation = {
       punch = {start = 70, stop = 100},
       run = {start = 105, stop = 135},
@@ -22,8 +22,8 @@ do
       {name = 'mobs:meat_raw',},
       {name = 'mobs:fur',},
     },
+    environment = {'default:dirt_with_grass'},
     hit_dice = 6,
-    looks_for = {'default:dirt_with_grass'},
     name = 'bear',
     mesh = "kpg_bear.x",
     reach = 2,
@@ -33,12 +33,15 @@ do
     },
   }
 
-  nmobs.register_mob(def)
+  local def2 = table.copy(def1)
+  def2.damage = 4
+  def2.environment = {'default:snow', 'default:dirt_with_snow'}
+  def2.hit_dice = 8
+  def2.name = 'kodiak'
+  def2.size = 2.5
+  def2.textures = { {"polar_bear.png"}, }
+  def2.vision = 20
 
-  --def = table.copy(def)
-  --def.textures = { {"dmobs_fox_arctic.png"}, }
-  --def.looks_for = {'default:snow', 'default:dirt_with_snow'}
-  --def.name = 'arctic fox'
-
-  --nmobs.register_mob(def)
+  nmobs.register_mob(def1)
+  nmobs.register_mob(def2)
 end

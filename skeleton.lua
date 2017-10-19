@@ -8,11 +8,9 @@
 nmobs.register_mob({
   attacks_player = true,
   armor_class = 8,
-  drops = {
-    {name = 'bonemeal:bone',},
-  },
+  drops = { {name = 'bonemeal:bone',}, },
+  environment = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow', 'default:desert_sand'},
   hit_dice = 3,
-  looks_for = {'default:dirt', 'default:dirt_with_grass', 'default:dirt_with_dry_grass', 'default:dirt_with_snow', 'default:desert_sand'},
   name = 'skeleton',
   -- rotate arms to forward
   nodebox = {
