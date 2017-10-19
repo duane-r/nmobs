@@ -15,13 +15,9 @@ do
     },
     armor_class = 7,
     collisionbox = { -0.2, -0.5, -0.2, 0.2, 0, 0.2 },
-    drops = {
-      { name = "mobs:meat_raw" },
-    },
+    drops = { { name = "mobs:meat_raw" }, },
+    environment = { 'default:dirt_with_grass', 'default:dirt_with_dry_grass', },
     hit_dice = 1,
-    looks_for = {
-      'default:dirt_with_grass', 'default:dirt_with_dry_grass',
-    },
     mesh = "mobs_chicken.x",
     name = 'chicken',
     run_speed = 3,
@@ -70,10 +66,8 @@ do
     collisionbox = { -0.2, -0.5, -0.2, 0.2, 0, 0.2 },
     damage = 3,
     drops = { },
+    environment = { 'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_moss', 'squaresville_c:stone_with_lichen', 'default:dirt_with_rainforest_litter' },
     hit_dice = 5,
-    looks_for = {
-      'default:dirt_with_grass', 'default:dirt_with_dry_grass',
-    },
     mesh = 'mobs_chicken.x',
     name = 'cockatrice',
     run_speed = 3,

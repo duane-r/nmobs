@@ -154,8 +154,8 @@ function nmobs:step(dtime)
 end
 
 
-function nmobs:change_animation()
-  if self._state == 'fleeing' and self._animation.run then
+function nmobs:change_animation()  -- self:_change_animation
+  if (self._state == 'fleeing' or self._state == 'scared') and self._animation.run then
     self.object:set_animation({x=self._animation.run.start, y=self._animation.run.stop}, self._animation.run.speed or 15, 0, not self._animation.run.noloop)
   elseif (self._state == 'traveling' or self._state == 'following') and self._animation.walk then
     self.object:set_animation({x=self._animation.walk.start, y=self._animation.walk.stop}, self._animation.walk.speed or 15, 0, not self._animation.walk.noloop)
@@ -800,7 +800,7 @@ function nmobs:activate(staticdata, dtime_s)
 
     local hp = 1
     if self._hit_dice < 1 then
-      hp = math.floor(self._hit_dice * 4)
+      hp = hp + math.floor(self._hit_dice * 4)
     else
       for i = 1, self._hit_dice do
         hp = hp + math.random(8)
