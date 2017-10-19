@@ -42,6 +42,7 @@ local check = {
   {'reach', 'number', false},
   {'replaces', 'table', false},
   {'run_speed', 'number', false},
+  {'scared', 'boolean', false},
   {'size', 'number', false},
   {'spawn', 'table', false},
   {'sound', 'string', false},
@@ -133,6 +134,8 @@ function nmobs:step(dtime)
     self:_flee()
   elseif self._state == 'following' then
     self:_follow()
+  elseif self._state == 'scared' then
+    self:_run_scared()
   elseif self._state == 'traveling' then
     self:_walk()
   else -- standing
@@ -236,8 +239,15 @@ function nmobs:fight()  -- self._fight
 end
 
 
+-- Mobs flee when wounded.
 function nmobs:flee()  -- self._flee
-  nmobs.walk_run(self, self._run_speed, 'flee', stand_and_fight, 'fighting')
+  nmobs.walk_run(self, self._run_speed, 'flee', self._scared and nil or stand_and_fight, 'fighting')
+end
+
+
+-- Scared mobs just run away.
+function nmobs:run_scared()  -- self._run_scared
+  nmobs.walk_run(self, self._run_speed, 'flee', nil, 'walking')
 end
 
 
@@ -266,7 +276,7 @@ end
 
 
 function nmobs:walk()  -- self._walk
-  if self:_aggressive_behavior() then
+  if self:_fearful_behavior() or self:_aggressive_behavior() then
     return
   end
 
@@ -285,7 +295,7 @@ end
 
 
 function nmobs:stand()  -- self._stand
-  if self:_aggressive_behavior() then
+  if self:_fearful_behavior() or self:_aggressive_behavior() then
     return
   end
 
@@ -333,7 +343,7 @@ end
 -- This just combines the walk/flee code, since they're very similar.
 function nmobs.walk_run(self, max_speed, new_dest_type, fail_chance, fail_action)
   -- the chance of tiring and stopping or fighting
-  if math.random(fail_chance) == 1 then
+  if fail_chance and fail_action and math.random(fail_chance) == 1 then
     self._state = fail_action
     return
   end
@@ -541,6 +551,19 @@ function nmobs.dir_to_target(pos, target)
 end
 
 
+function nmobs:fearful_behavior()  -- self._fearful_behavior
+  if self._scared and not self._owner and not nmobs.nice_mobs then
+    local prey = self:_find_prey()
+    if prey then
+      self._target = prey
+      self._chose_destination = minetest.get_gametime()
+      self._state = 'scared'
+      return true
+    end
+  end
+end
+
+
 function nmobs:aggressive_behavior()  -- self._aggressive_behavior
   if self._attacks_player and not self._owner and not nmobs.nice_mobs then
     local prey = self:_find_prey()
@@ -554,7 +577,7 @@ function nmobs:aggressive_behavior()  -- self._aggressive_behavior
 end
 
 
-function nmobs:find_prey()
+function nmobs:find_prey()  -- self._find_prey
   local prey = {}
 
   for _, player in pairs(minetest.get_connected_players()) do
@@ -775,9 +798,13 @@ function nmobs:activate(staticdata, dtime_s)
     self._born = minetest.get_gametime()
     local pos = vector.round(self.object:get_pos())
 
-    local hp = 0
-    for i = 1, self._hit_dice do
-      hp = hp + math.random(8)
+    local hp = 1
+    if self._hit_dice < 1 then
+      hp = math.floor(self._hit_dice * 4)
+    else
+      for i = 1, self._hit_dice do
+        hp = hp + math.random(8)
+      end
     end
     self._hp = hp
     self.object:set_hp(hp)
@@ -1026,6 +1053,7 @@ function nmobs.register_mob(def)
     _drops = good_def.drops or {},
     _environment = good_def.environment,
     _fall = good_def._fall or nmobs.fall,
+    _fearful_behavior = good_def._fearful_behavior or nmobs.fearful_behavior,
     _fight = good_def._fight or nmobs.fight,
     _find_prey = good_def._find_prey or nmobs.find_prey,
     _flee = good_def._flee or nmobs.flee,
@@ -1047,6 +1075,8 @@ function nmobs.register_mob(def)
     _replace = good_def._replace or nmobs.replace,
     _replaces = good_def.replaces,
     _run_speed = (good_def.run_speed or 3),
+    _run_scared = good_def._run_scared or nmobs.run_scared,
+    _scared = good_def.scared,
     _sound = good_def.sound,
     _sound_angry = good_def.sound_angry,
     _sound_scared = good_def.sound_scared,

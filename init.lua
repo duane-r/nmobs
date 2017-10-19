@@ -49,10 +49,13 @@ end
 
 
 dofile(nmobs.path .. "/api.lua")
+dofile(nmobs.path .. "/bee.lua")
 dofile(nmobs.path .. "/bear.lua")
 dofile(nmobs.path .. "/boulder.lua")
+dofile(nmobs.path .. "/chicken.lua")
 dofile(nmobs.path .. "/cow.lua")
 --dofile(nmobs.path .. "/crystaloid1.lua")
+dofile(nmobs.path .. "/elephant.lua")
 dofile(nmobs.path .. "/fox.lua")
 dofile(nmobs.path .. "/goat.lua")
 dofile(nmobs.path .. "/goblin.lua")
