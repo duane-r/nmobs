@@ -32,7 +32,7 @@ do
 
   def = table.copy(def)
   def.textures = { {"dmobs_fox_arctic.png"}, }
-  def.looks_for = {'default:snow', 'default:dirt_with_snow'}
+  def.environment = {'default:snow', 'default:dirt_with_snow'}
   def.name = 'arctic fox'
 
   nmobs.register_mob(def)

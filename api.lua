@@ -11,8 +11,19 @@ local bored_with_standing = 10
 local bored_with_walking = 20
 local gravity = -10
 local noise_rarity = 100
+local run_if_cant_hit = 5
 local stand_and_fight = 40
 local terminal_height = 10
+local time_grain = 0.5
+
+local default_hurts_me = {
+  'default:lava_source',
+  'default:lava_flowing',
+  'fire:basic_flame',
+  'fire:permanent_flame',
+  'group:surface_hot',
+}
+nmobs.default_hurts_me = hurts_me
 
 local DEBUG
 
@@ -30,6 +41,7 @@ local check = {
   {'fly', 'boolean', false},
   {'higher_than', 'number', false},
   {'hit_dice', 'number', false},
+  {'hurts_me', 'table', false},
   {'looks_for', 'table', false},
   {'lower_than', 'number', false},
   {'lifespan', 'number', false},
@@ -111,14 +123,15 @@ function nmobs:step(dtime)
 
   -- Most behavior only happens once per second.
   self._last_step = self._last_step + dtime
-  if self._last_step < 1 then
+  if self._last_step < time_grain then
     self._lock = nil
     return
   end
 
+  local time = minetest.get_gametime()
   -- Check if a mob has lived too long.
   if not self._owner then
-    if (not self._born) or ((minetest.get_gametime() - self._born) > (self._lifespan or 200)) then
+    if (not self._born) or ((time - self._born) > (self._lifespan or 200)) then
       self._kill_me = true
       self._lock = nil
       return
@@ -127,6 +140,29 @@ function nmobs:step(dtime)
 
   self._last_step = 0
   local old_state = self._state
+
+  do
+    local hp = self.object:get_hp()
+    if hp ~= self._hp then
+      if hp ~= 2 then
+        if DEBUG then
+          print('* adjusted '..self.name..'\'s hp to '..hp)
+        end
+        self._hp = hp
+      else
+        if DEBUG then
+          print('** resetting hp -- to fix minetest\'s dumbass entity handling')
+        end
+        self.object:set_hp(self._hp)
+      end
+    end
+  end
+
+  self:_terrain_effects()
+
+  if self._state ~= 'fighting' then
+    self._cant_hit = nil
+  end
 
   if self._state == 'fighting' then
     self:_fight()
@@ -168,13 +204,15 @@ end
 
 
 function nmobs:get_pos()  -- self._get_pos
-  if self._last_pos then
-    return self._last_pos
-  else
-    self._last_pos = self.object:get_pos()
-    self._last_pos.y = math.floor(self._last_pos.y + 0.5)
-    return table.copy(self._last_pos)
-  end
+  return self.object:get_pos()
+
+  --if self._last_pos then
+  --  return self._last_pos
+  --else
+  --  self._last_pos = self.object:get_pos()
+  --  self._last_pos.y = math.floor(self._last_pos.y + 0.5)
+  --  return table.copy(self._last_pos)
+  --end
 end
 
 
@@ -222,17 +260,35 @@ function nmobs:fight()  -- self._fight
   end
 
   local opponent_pos = self._target:get_pos()
-  if vector.distance(self:_get_pos(), opponent_pos) > self._vision then
+  opponent_pos.y = opponent_pos.y + 1
+
+  local dist = vector.distance(self:_get_pos(), opponent_pos) - self.collisionbox[4] + self.collisionbox[1]
+  if dist > self._vision then
     -- out of range
     self._target = nil
     self._state = 'standing'
     return
-  elseif vector.distance(self:_get_pos(), opponent_pos) < 1 + self._reach then
-    -- in punching range
+  end
+
+  -- If it's in sword range, it gets to hit back.
+  if dist < 4 then
+    local p = self:_get_pos()
+    p.y = p.y + self._viewpoint
+
+    if minetest.line_of_sight(p, opponent_pos) then
+      -- in punching range
+      local thp = self._target:get_hp()
+      self:_punch(self._target, 1, self._weapon_capabilities)
+      if thp - self._target:get_hp() >= 1 then
+        self._cant_hit = minetest.get_gametime()
+      end
+    end
+  end
+
+  if dist < 2 then
     local dir = nmobs.dir_to_target(self:_get_pos(), opponent_pos) + math.random()
     self.object:set_yaw(dir)
     self.object:set_velocity(null_vector)
-    self:_punch(self._target, 1, self._weapon_capabilities)
   else
     -- chasing
     self._destination = self._target:get_pos()
@@ -410,7 +466,7 @@ function nmobs:tunnel()  -- self._tunnel
 
   -- Check if the node can be dug.
   local next_pos = vector.add(pos, dir)
-  local nodes = minetest.find_nodes_in_area(vector.subtract(next_pos, self._reach - 1), vector.add(next_pos, self._reach - 1), self._diggable)
+  local nodes = minetest.find_nodes_in_area(vector.subtract(next_pos, self._reach_eff - 1), vector.add(next_pos, self._reach_eff - 1), self._diggable)
   if nodes and #nodes > 0 then
     local p = nodes[math.random(#nodes)]
     if minetest.is_protected(p, '') then
@@ -589,7 +645,10 @@ function nmobs:find_prey()  -- self._find_prey
 
   for _, player in pairs(minetest.get_connected_players()) do
     local opos = player:get_pos()
-    if vector.distance(self:_get_pos(), opos) < self._vision then
+    opos.y = opos.y + 1.5
+    local p = self:_get_pos()
+    p.y = p.y + self._viewpoint
+    if vector.distance(p, opos) < self._vision and minetest.line_of_sight(p, opos) then
       prey[#prey+1] = player
     end
   end
@@ -606,7 +665,7 @@ function nmobs:simple_replace(replaces, with)
 
   local pos = self:_get_pos()
 
-  for r = 1, 1 + self._reach do
+  for r = 1, 1 + self._reach_eff do
     local minp = vector.subtract(pos, r)
     local maxp = vector.add(pos, r)
     local nodes = minetest.find_nodes_in_area(minp, maxp, replaces)
@@ -649,7 +708,7 @@ function nmobs:replace()  -- _replace
         break
       end
 
-      for r = 1, 1 + self._reach do
+      for r = 1, 1 + self._reach_eff do
         local minp = vector.subtract(pos, r)
         if not (instance.down or instance.floor) then
           minp.y = pos.y
@@ -679,6 +738,27 @@ function nmobs:replace()  -- _replace
           end
         end
       end
+    end
+  end
+end
+
+
+function nmobs:terrain_effects()  -- self._terrain_effects
+  local bug = true
+  local pos = self:_get_pos()
+  pos.y = pos.y + self.collisionbox[2]
+  local p = minetest.find_node_near(pos, 1 + self.collisionbox[4], self._hurts_me, true)
+  if p then
+    self._hp = self._hp - 2
+    self.object:set_hp(self._hp)
+    self._state = 'fleeing'
+    if DEBUG then
+      local node = minetest.get_node_or_nil(p) or {name = '?'}
+      print('*'..self.name..' takes damage from '..node.name..' -- '..self._hp..' hp')
+    end
+
+    if self._hp <= 0 and bug then
+      self._kill_me = true
     end
   end
 end
@@ -736,7 +816,8 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
     end
 
     hp = math.max(0, hp - adj_damage)
-    self.object:set_hp(hp)
+    self._hp = hp
+    self.object:set_hp(self._hp)
   else
     hp = hp - damage
   end
@@ -755,9 +836,15 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
     end
   end
 
+  if not self._cant_hit then
+    self._cant_hit = minetest.get_gametime()
+  end
+
   self._target = puncher
   self._chose_destination = minetest.get_gametime()
-  if puncher and puncher:is_player() and vector.distance(self:_get_pos(), puncher:get_pos()) > self._vision then
+  if puncher and vector.distance(self:_get_pos(), puncher:get_pos()) > self._vision then
+    self._state = 'fleeing'
+  elseif puncher and self._cant_hit and minetest.get_gametime() - self._cant_hit > run_if_cant_hit then
     self._state = 'fleeing'
   elseif hp < damage * 2 then
     self._state = 'fleeing'
@@ -795,11 +882,13 @@ function nmobs:activate(staticdata, dtime_s)
   self.object:set_velocity(null_vector)
   if self._hp then
     self.object:set_hp(self._hp)
+  elseif self._born then
+    self._kill_me = true
+    return
   end
 
   self.object:set_properties({
     textures = self.textures[math.random(#self.textures)],
-    --stepheight = self.stepheight,
   })
 
   if not self._born then
@@ -815,7 +904,7 @@ function nmobs:activate(staticdata, dtime_s)
       end
     end
     self._hp = hp
-    self.object:set_hp(hp)
+    self.object:set_hp(self._hp)
     if DEBUG then
       print('Nmobs: activated a '..self._printed_name..' with '..hp..' HP at ('..pos.x..','..pos.y..','..pos.z..'). Game time: '..self._born)
     end
@@ -827,9 +916,11 @@ function nmobs:activate(staticdata, dtime_s)
 end
 
 function nmobs:get_staticdata()
-  local data = {}
+  if not self._born then
+    return
+  end
 
-  self._hp = self.object:get_hp()
+  local data = {}
 
   for k, d in pairs(self) do
     if k:find('^_') and not skip_serializing[k] and not nmobs.mobs[self._name][k] then
@@ -1078,6 +1169,7 @@ function nmobs.register_mob(def)
     _fly = good_def.fly,
     _get_pos = good_def._get_pos or nmobs.get_pos,
     _hit_dice = (good_def.hit_dice or 1),
+    _hurts_me = good_def.hurts_me or default_hurts_me,
     _is_a_mob = true,
     _last_step = 0,
     _lifespan = (good_def.lifespan or 200),
@@ -1090,6 +1182,7 @@ function nmobs.register_mob(def)
     _punch = good_def._punch or nmobs.punch,
     _rarity = (good_def.rarity or 20000),
     _reach = (good_def.reach or 1),
+    _reach_eff = (good_def.reach or 1) + math.max(0, cbox[4], cbox[6]),
     _replace = good_def._replace or nmobs.replace,
     _replaces = good_def.replaces,
     _run_speed = (good_def.run_speed or 3),
@@ -1103,8 +1196,10 @@ function nmobs.register_mob(def)
     _state = 'standing',
     _tames = good_def.tames,
     _target = nil,
+    _terrain_effects = good_def._terrain_effects or nmobs.terrain_effects,
     _travel = good_def._travel or nmobs.travel,
     _tunnel = good_def._tunnel or nmobs.tunnel,
+    _viewpoint = ((cbox[5] - cbox[2]) / 2) + cbox[2],
     _diggable = good_def.can_dig,
     _vision = (good_def.vision or 15),
     _walk = good_def._walk or nmobs.walk,

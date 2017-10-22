@@ -24,7 +24,6 @@ do
     hit_dice = 0,
     mesh = 'mobs_bunny.b3d',
     name = 'bunny',
-    reach = 1,
     scared = true,
     run_speed = 2,
     textures = {
