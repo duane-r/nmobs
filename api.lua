@@ -16,6 +16,16 @@ local stand_and_fight = 40
 local terminal_height = 10
 local time_grain = 0.5
 
+-- These relate to making mobs tougher at the outer edges
+--  of the world.
+local good_loot_chance = 10  -- chance = floor(difficulty - 1) / n
+local maximum_multiplier = 5  -- Set this to change the maximum difficulty.
+local minimum_multiplier = 1  -- Set this to change the minimum difficulty.
+local speed_factor = 0.5  -- Mob speed increases by n * difficulty (2.5).
+
+local hardness = (31000 / maximum_multiplier) / minimum_multiplier
+
+
 local default_hurts_me = {
   'default:lava_source',
   'default:lava_flowing',
@@ -23,7 +33,14 @@ local default_hurts_me = {
   'fire:permanent_flame',
   'group:surface_hot',
 }
-nmobs.default_hurts_me = hurts_me
+nmobs.default_hurts_me = default_hurts_me
+
+local good_loot_table = {
+  'default:mese_crystal_fragment',
+  'default:diamond',
+  'default:gold_lump',
+}
+nmobs.good_loot_table = good_loot_table
 
 local DEBUG
 
@@ -148,7 +165,7 @@ function nmobs:step(dtime)
         if DEBUG then
           print('* adjusted '..self.name..'\'s hp to '..hp)
         end
-        self._hp = hp
+        self._hp = math.floor(hp + 0.5)
       else
         if DEBUG then
           print('** resetting hp -- to fix minetest\'s dumbass entity handling')
@@ -749,7 +766,7 @@ function nmobs:terrain_effects()  -- self._terrain_effects
   pos.y = pos.y + self.collisionbox[2]
   local p = minetest.find_node_near(pos, 1 + self.collisionbox[4], self._hurts_me, true)
   if p then
-    self._hp = self._hp - 2
+    self._hp = math.floor(self._hp - 2 + 0.5)
     self.object:set_hp(self._hp)
     self._state = 'fleeing'
     if DEBUG then
@@ -816,7 +833,7 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
     end
 
     hp = math.max(0, hp - adj_damage)
-    self._hp = hp
+    self._hp = math.floor(hp + 0.5)
     self.object:set_hp(self._hp)
   else
     hp = hp - damage
@@ -831,6 +848,17 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
       for _, drop in ipairs(self._drops) do
         if drop.name and minetest.registered_items[drop.name] and (not drop.chance or math.random(1, drop.chance) == 1) then
           puncher:get_inventory():add_item("main", ItemStack(drop.name.." "..math.random((drop.min or 1), (drop.max or 1))))
+        end
+      end
+
+      -- Give extra loot for (positionally) tough mobs.
+      if self._difficulty and good_loot_table then
+        local chance = math.floor(self._difficulty - 1)
+
+        if math.random(good_loot_chance) <= chance then
+          local loot = good_loot_table[math.random(#good_loot_table)]
+          local num = 1
+          puncher:get_inventory():add_item("main", ItemStack(loot.." "..num))
         end
       end
     end
@@ -903,10 +931,25 @@ function nmobs:activate(staticdata, dtime_s)
         hp = hp + math.random(8)
       end
     end
+
+    -- This keeps sky realm mobs from becoming harder.
+    --local y = (pos.y > 0) and 0 or pos.y
+
+    -- Make mobs at the edges of the world tougher (even bunnies).
+    local factor = 1 + (math.max(math.abs(pos.x), math.abs(pos.y), math.abs(pos.z)) * minimum_multiplier / hardness)
+
+    hp = math.floor(hp * factor + 0.5)
     self._hp = hp
     self.object:set_hp(self._hp)
+    self._damage = self._damage * factor
+    --if change_walk_velocity then
+    --  self._walk_speed = self._walk_speed * math.max(1, speed_factor * factor)
+    --end
+    self._run_speed = self._run_speed * math.max(1, speed_factor * factor)
+    self._difficulty = factor
+
     if DEBUG then
-      print('Nmobs: activated a '..self._printed_name..' with '..hp..' HP at ('..pos.x..','..pos.y..','..pos.z..'). Game time: '..self._born)
+      print('Nmobs: activated a '..self._printed_name..' with '..hp..' HP (factor: '..(math.floor(factor * 100) / 100)..') at ('..pos.x..','..pos.y..','..pos.z..'). Game time: '..self._born)
     end
   end
 
