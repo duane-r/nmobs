@@ -5,7 +5,7 @@
 
 nmobs = {}
 nmobs = nmobs
-nmobs.version = "1.0"
+nmobs.version = "20171028"
 nmobs.path = minetest.get_modpath(minetest.get_current_modname())
 nmobs.world = minetest.get_worldpath()
 nmobs.mobs = {}
