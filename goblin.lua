@@ -94,7 +94,7 @@ local function goblin_replace(self)
   if math.random(5) == 1 then
     local p = {x=pos.x, y=pos.y-1, z=pos.z}
     local n = minetest.get_node_or_nil(p)
-    if n and minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].groups.cracky then
+    if n and minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].groups.cracky and n.name ~= 'bastet:bastet' then
       local sr = math.random(4)
       if sr == 1 then
         minetest.set_node(p, {name='nmobs:mossycobble_slimy'})
