@@ -49,7 +49,7 @@ local DEBUG
 local check = {
   {'animation', 'table', false},
   {'armor_class', 'number', false},
-  {'attacks_player', 'boolean', false},
+  {'attacks_player', nil, false},
   {'collisionbox', 'table', false},
   {'damage', 'number', false},
   {'diurnal', 'boolean', false},
@@ -291,8 +291,12 @@ function nmobs:fight()  -- self._fight
   if dist < 4 then
     local p = self:_get_pos()
     p.y = p.y + self._viewpoint
+    local los = minetest.line_of_sight(p, opponent_pos)
+    p.y = p.y + 1
+    opponent_pos.y = opponent_pos.y + 1
+    los = los or minetest.line_of_sight(p, opponent_pos)
 
-    if minetest.line_of_sight(p, opponent_pos) then
+    if los then
       -- in punching range
       local thp = self._target:get_hp()
       self:_punch(self._target, 1, self._weapon_capabilities)
@@ -646,6 +650,10 @@ end
 
 function nmobs:aggressive_behavior()  -- self._aggressive_behavior
   if self._attacks_player and not self._owner and not nmobs.nice_mobs then
+    if type(self._attacks_player) == 'number' and math.random(100) > self._attacks_player then
+      return
+    end
+
     local prey = self:_find_prey()
     if prey then
       self._target = prey
@@ -1052,7 +1060,7 @@ function nmobs.register_mob(def)
       return
     end
 
-    if def[att[1]] and type(def[att[1]]) == att[2] then
+    if def[att[1]] and ((not att[2]) or type(def[att[1]]) == att[2]) then
       good_def[att[1]] = def[att[1]]
     end
   end

@@ -14,7 +14,7 @@ do
       stand = {start = 0, stop = 15, noloop = true},
       walk = {start = 35, stop = 65},
     },
-    attacks_player = true,
+    attacks_player = 10,
     armor_class = 6,
     collisionbox = {-0.4, -0.01, -0.4, 0.4, 1, 0.4},
     damage = 2,

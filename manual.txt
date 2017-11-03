@@ -8,7 +8,7 @@ doc/lua_api.txt). The simplest mob.lua file will contain the
 following:
 
 nmobs.register_mob({
-  looks_for = {'default:dirt_with_grass'},
+  environment = {'default:dirt_with_grass'},
   name = 'pig',
   nodebox = {
     {-0.0625, -0.3125, 0.375, 0.0625, -0.1875, 0.4375},
@@ -28,7 +28,7 @@ nmobs.register_mob({
   },
 })
 
-The nodebox data creates the actual shape of the mob. The looks_for
+The nodebox data creates the actual shape of the mob. The environment
 entry is a table of nodes that the mob likes (usually grass for
 grazing animals) and will gravitate toward.
 
@@ -46,7 +46,9 @@ armor_class = [number] specifies an AD&D-style armor class with 10
                        as unarmored and lower numbers increasing
                        protection. Plate mail is 2. Default: 10.
 
-attacks_player = true  makes the mob attack players.
+attacks_player = true  makes the mob attack players. This can also
+                       be a number used as a percentage chance to
+                       attack.
 
 collisionbox = [table] specifies a nodebox to use for the mob's
                        collision box (see doc/lua_api.txt). This
