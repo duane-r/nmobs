@@ -14,7 +14,7 @@ do
       walk = { start = 3, stop = 19, speed = 7 }
     },
     armor_class = 8,
-    attacks_player = true,
+    attacks_player = 10,
     collisionbox = { -0.36, -0.4, -0.36, 0.36, 0.36, 0.36 },
     damage = 7,
     drops = { { name = "mobs:meat_raw", min = 4, max = 8, } },
