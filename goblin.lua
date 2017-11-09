@@ -271,7 +271,7 @@ minetest.register_node("nmobs:mossycobble_slimy", {
   description = "Messy Gobblestone",
   tiles = {"default_mossycobble.png"},
   is_ground_content = false,
-  groups = {cracky = 2, stone = 1, trap = 1, slippery_floor_trap = 1},
+  groups = {cracky = 2, stone = 1, slippery = 3},
   sounds = default.node_sound_stone_defaults(),
   paramtype = "light",
   light_source =  4,

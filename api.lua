@@ -56,6 +56,7 @@ local check = {
   {'drops', 'table', false},
   {'environment', 'table', false},
   {'fly', 'boolean', false},
+  {'glow', 'number', false},
   {'higher_than', 'number', false},
   {'hit_dice', 'number', false},
   {'hurts_me', 'table', false},
@@ -626,6 +627,10 @@ end
 function nmobs.dir_to_target(pos, target)
   local direction = vector.direction(pos, target)
 
+  if direction.x == 0 then
+    direction.x = 0.1
+  end
+
   local dir = (math.atan(direction.z / direction.x) + math.pi / 2)
   if target.x > pos.x then
     dir = dir + math.pi
@@ -809,6 +814,10 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
     local time_frac = 1
     local adj_damage
     if tool_capabilities and tool_capabilities.damage_groups then
+      if tool_capabilities.full_punch_interval == 0 then
+        tool_capabilities.full_punch_interval = 1
+      end
+
       time_frac = math.limit(time_from_last_punch / tool_capabilities.full_punch_interval, 0, 1)
       for grp, dmg in pairs(tool_capabilities.damage_groups) do
         if not adj_damage then
@@ -1191,6 +1200,7 @@ function nmobs.register_mob(def)
     collide_with_objects = true,
     collisionbox = cbox,
     get_staticdata = nmobs.get_staticdata,
+    glow = good_def.glow,
     hp_max = 2,
     hp_min = 1,
     on_activate = nmobs.activate,

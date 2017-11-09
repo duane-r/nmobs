@@ -42,6 +42,15 @@ do
   def2.textures = { {"polar_bear.png"}, }
   def2.vision = 20
 
+  local def3 = table.copy(def1)
+  def3.environment = {'default:stone'}
+  def3.glow = 2
+  def3.name = 'cave_bear'
+  def3.size = 1
+  def3.textures = { {"cave_bear.png"}, }
+  def3.vision = 20
+
   nmobs.register_mob(def1)
   nmobs.register_mob(def2)
+  nmobs.register_mob(def3)
 end
