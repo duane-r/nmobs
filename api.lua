@@ -289,7 +289,7 @@ function nmobs:fight()  -- self._fight
   end
 
   -- If it's in sword range, it gets to hit back.
-  if dist < 4 then
+  if dist < self._reach_eff then
     local p = self:_get_pos()
     p.y = p.y + self._viewpoint
     local los = minetest.line_of_sight(p, opponent_pos)
@@ -307,7 +307,7 @@ function nmobs:fight()  -- self._fight
     end
   end
 
-  if dist < 2 then
+  if dist < self._reach_eff then
     local dir = nmobs.dir_to_target(self:_get_pos(), opponent_pos) + math.random()
     self.object:set_yaw(dir)
     self.object:set_velocity(null_vector)
@@ -1205,7 +1205,7 @@ function nmobs.register_mob(def)
     hp_min = 1,
     on_activate = nmobs.activate,
     on_step = nmobs.step,
-    on_punch = nmobs.take_punch,
+    on_punch = good_def._take_punch or nmobs.take_punch,
     on_rightclick = nmobs.on_rightclick,
     physical = true,
     stepheight = good_def.step_height or 1.1,
@@ -1243,7 +1243,7 @@ function nmobs.register_mob(def)
     _punch = good_def._punch or nmobs.punch,
     _rarity = (good_def.rarity or 20000),
     _reach = (good_def.reach or 1),
-    _reach_eff = (good_def.reach or 1) + math.max(0, cbox[4], cbox[6]),
+    _reach_eff = math.ceil((good_def.reach or 3.5) + math.max(0, cbox[4], cbox[6])),
     _replace = good_def._replace or nmobs.replace,
     _replaces = good_def.replaces,
     _run_speed = (good_def.run_speed or 3),

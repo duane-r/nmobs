@@ -46,7 +46,6 @@ do
     hit_dice = 4,
     mesh = 'mobs_spider.x',
     name = 'spider_giant',
-    reach = 2,
     run_speed = 3,
     size = 7,
     sound = 'mobs_spider',

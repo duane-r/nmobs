@@ -26,7 +26,6 @@ do
     hit_dice = 6,
     name = 'bear',
     mesh = "kpg_bear.x",
-    reach = 2,
     size = 2,
     textures = {
       {"kpg_bear.png"},

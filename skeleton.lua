@@ -31,7 +31,6 @@ nmobs.register_mob({
     {0.31, 0.21, 0.24, 0.24, 0.23, 0.32}, -- righthand
   },
   nocturnal = true,
-  reach = 2,
   size = 2,
   --tames = {'farming:wheat'},
 })

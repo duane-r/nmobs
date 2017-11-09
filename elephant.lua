@@ -22,7 +22,6 @@ do
     hit_dice = 10,
     mesh = 'elephant.b3d',
     name = 'elephant',
-    reach = 2,
     run_speed = 2,
     size = 2.5,
     textures = {

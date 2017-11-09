@@ -29,7 +29,6 @@ do
     hit_dice = 3,
     mesh = "zombie_normal.b3d",
     name = 'zombie',
-    reach = 2,
     run_speed = 1,
     size = 1.5,
     spawn = {

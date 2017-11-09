@@ -17,7 +17,13 @@ nmobs.register_mob({
   nodebox = {
     {-0.5, -0.5, -0.5, 0.5, -0.45, 0.5},
   },
+  reach = 0,
   run_speed = 0.1,
   walk_speed = 0.1,
+
+  -- can't be hurt by weapons
+  _take_punch = function()
+    return true
+  end
   --tames = {'farming:wheat'},
 })
