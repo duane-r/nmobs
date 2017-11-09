@@ -15,6 +15,7 @@ do
     },
     armor_class = 7,
     collisionbox = { -0.2, -0.5, -0.2, 0.2, 0, 0.2 },
+    damage = 0.5,
     drops = { { name = "mobs:meat_raw" }, },
     environment = { 'default:dirt_with_grass', 'default:dirt_with_dry_grass', },
     hit_dice = 1,

@@ -288,7 +288,6 @@ function nmobs:fight()  -- self._fight
     return
   end
 
-  -- If it's in sword range, it gets to hit back.
   if dist < self._reach_eff then
     local p = self:_get_pos()
     p.y = p.y + self._viewpoint
@@ -320,7 +319,11 @@ end
 
 
 function nmobs:punch(target, delay, capabilities)  -- self._punch
-  target:punch(self.object, delay, capabilities, nil)
+  if self._fractional_damage and self._fractional_damage > 1 and math.random(self._fractional_damage) ~= 1 then
+    return
+  end
+
+  return target:punch(self.object, delay, capabilities, nil)
 end
 
 
@@ -962,7 +965,7 @@ function nmobs:activate(staticdata, dtime_s)
     --if change_walk_velocity then
     --  self._walk_speed = self._walk_speed * math.max(1, speed_factor * factor)
     --end
-    self._run_speed = self._run_speed * math.max(1, speed_factor * factor)
+    self._run_speed = self._run_speed * math.max(math.min(self._walk_speed, 1), speed_factor * factor)
     self._difficulty = factor
 
     if DEBUG then
@@ -1165,9 +1168,13 @@ function nmobs.register_mob(def)
     cbox[i] = cbox[i] * good_def.size
   end
 
-  if not good_def.damage then
+  if not good_def.damage or good_def.damage <= 0 then
+    good_def.damage = 1
+  elseif good_def.damage < 1 then
+    good_def._fractional_damage = math.floor(1 / good_def.damage)
     good_def.damage = 1
   end
+
   if not good_def.weapon_capabilities then
     good_def.weapon_capabilities = {
       full_punch_interval=1,
@@ -1227,6 +1234,7 @@ function nmobs.register_mob(def)
     _find_prey = good_def._find_prey or nmobs.find_prey,
     _flee = good_def._flee or nmobs.flee,
     _follow = good_def._follow or nmobs.follow,
+    _fractional_damage = good_def._fractional_damage or 0,
     _fly = good_def.fly,
     _get_pos = good_def._get_pos or nmobs.get_pos,
     _hit_dice = (good_def.hit_dice or 1),

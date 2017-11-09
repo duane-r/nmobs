@@ -7,23 +7,30 @@
 
 nmobs.register_mob({
   attacks_player = true,
-  armor_class = 5,
-  --drops = { {name = 'mobs:meat_raw', chance = 3,}, },
-  environment = {'default:stone', 'default:cobble', 'default:stone_block'},
+  damage = 0.2,
+  environment = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville_c:stone_with_moss', 'default:cobble', 'default:stone_block', 'default:mossycobble'},
   glow = 2,
-  hit_dice = 3,
+  hit_dice = 2,
   name = 'slime_green',
-  nocturnal = true,
   nodebox = {
     {-0.5, -0.5, -0.5, 0.5, -0.45, 0.5},
   },
   reach = 0,
-  run_speed = 0.1,
-  walk_speed = 0.1,
+  run_speed = 0.2,
+  spawn = {
+    {
+      nodes = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville_c:stone_with_moss', 'default:cobble', 'default:stone_block', 'default:mossycobble'},
+      rarity = 20000,
+    },
+    {
+      nodes = {'squaresville_c:puddle_ooze'},
+      rarity = 20,
+    },
+  },
+  walk_speed = 0.2,
 
   -- can't be hurt by weapons
   _take_punch = function()
     return true
   end
-  --tames = {'farming:wheat'},
 })

@@ -15,6 +15,7 @@ do
     },
     armor_class = 7,
     collisionbox = { -0.2, -0.01, -0.2, 0.2, 0.2, 0.2 },
+    damage = 0.5,
     drops = { { name = "mobs:honey", chance = 2, max = 2, } },
     environment = { 'group:flower', },
     hit_dice = 0.5,

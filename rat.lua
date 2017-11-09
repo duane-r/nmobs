@@ -12,6 +12,7 @@ do
   local def = {
     armor_class = 7,
     collisionbox = { -0.2, -0.7, -0.2, 0.2, -0.5, 0.2 },
+    damage = 0.5,
     drops = {
       { name = 'mobs:rat_dead' },
     },

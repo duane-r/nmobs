@@ -159,7 +159,7 @@ nmobs.register_mob({
     },
     {
       nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
-      rarity = 1000,
+      rarity = 5000,
     },
   },
   tames = {'default:diamond'},
@@ -220,7 +220,7 @@ nmobs.register_mob({
     },
     {
       nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
-      rarity = 1000,
+      rarity = 5000,
     },
   },
   tames = {'default:diamond'},

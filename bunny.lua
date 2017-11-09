@@ -17,6 +17,7 @@ do
     },
     armor_class = 7,
     collisionbox = { -0.268, -0.35, -0.268, 0.268, 0.167, 0.268 },
+    damage = 0.5,
     drops = {
       { name = "nmobs:meat_raw" }
     },
