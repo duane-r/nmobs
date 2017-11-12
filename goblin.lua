@@ -100,8 +100,12 @@ local function goblin_replace(self)
         minetest.set_node(p, {name='nmobs:mossycobble_slimy'})
       elseif sr == 2 then
         minetest.set_node(p, {name='default:dirt'})
-      elseif sr == 3 and minetest.registered_nodes['squaresville_c:glowing_fungal_stone'] then
-        minetest.set_node(p, {name='squaresville_c:glowing_fungal_stone'})
+      elseif sr == 3 then
+        if minetest.registered_nodes['squaresville_c:glowing_fungal_stone'] then
+          minetest.set_node(p, {name='squaresville_c:glowing_fungal_stone'})
+        else
+          minetest.set_node(p, {name='nmobs:mossycobble_slimy'})
+        end
       else
         minetest.set_node(p, {name='default:mossycobble'})
       end
