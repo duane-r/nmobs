@@ -49,6 +49,7 @@ local DEBUG
 local check = {
   {'animation', 'table', false},
   {'armor_class', 'number', false},
+  {'aquatic', 'boolean', false},
   {'attacks_player', nil, false},
   {'collisionbox', 'table', false},
   {'damage', 'number', false},
@@ -264,10 +265,47 @@ function nmobs:fall()  -- self._fall
 
   local node = minetest.get_node_or_nil(pos)
   if node and liquids[node.name] then
-    grav = 1
+    if self._aquatic then
+      grav = 0
+    else
+      grav = 1
+    end
   end
 
   self.object:set_acceleration({x=0, y=grav, z=0})
+end
+
+
+function nmobs:line_of_sight(p1, p2)  -- _line_of_sight
+  if not p1 or not p2 then
+    print('nmobs: los function received bad parameters')
+    return
+  end
+
+  local b = table.copy(p1)
+  local los
+  for i = 1, 100 do
+    if vector.distance(b, p2) < 1 then
+      return true
+    end
+
+    los, b = minetest.line_of_sight(b, p2)
+    if los then
+      return los
+    end
+
+    local n = minetest.get_node_or_nil(b)
+    if not n or not minetest.registered_items[n.name] then
+      return
+    end
+
+    if minetest.registered_items[n.name].walkable then
+      return
+    end
+
+    local d = vector.direction(b, p2)
+    b = vector.add(b, d)
+  end
 end
 
 
@@ -278,7 +316,17 @@ function nmobs:fight()  -- self._fight
   end
 
   local opponent_pos = self._target:get_pos()
+
   opponent_pos.y = opponent_pos.y + 1
+
+  if self._aquatic then
+    local n = minetest.get_node_or_nil(opponent_pos)
+    if not n or not self._environment_match[n.name] then
+      self.object:set_velocity(null_vector)
+      self._state = 'fleeing'
+      return
+    end
+  end
 
   local dist = vector.distance(self:_get_pos(), opponent_pos) - self.collisionbox[4] + self.collisionbox[1]
   if dist > self._vision then
@@ -291,10 +339,10 @@ function nmobs:fight()  -- self._fight
   if dist < self._reach_eff then
     local p = self:_get_pos()
     p.y = p.y + self._viewpoint
-    local los = minetest.line_of_sight(p, opponent_pos)
+    local los = self:_line_of_sight(p, opponent_pos)
     p.y = p.y + 1
     opponent_pos.y = opponent_pos.y + 1
-    los = los or minetest.line_of_sight(p, opponent_pos)
+    los = los or self:_line_of_sight(p, opponent_pos)
 
     if los then
       -- in punching range
@@ -531,6 +579,16 @@ function nmobs:travel(speed)  -- self._travel
   local pos = self:_get_pos()
   local dir = nmobs.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
 
+  if self._aquatic and self._state ~= 'fleeing' then
+    local n = minetest.get_node_or_nil(pos)
+    if not n or not self._environment_match[n.name] then
+      self.object:set_velocity(vector.subtract({x=0,y=0,z=0}, self.object:get_velocity()))
+      self._destination = nil
+      self._state = 'fleeing'
+      return
+    end
+  end
+
   do
     local velocity = self.object:get_velocity()
     local actual_speed = vector.horizontal_length(velocity)
@@ -549,7 +607,7 @@ function nmobs:travel(speed)  -- self._travel
   self.object:set_yaw(dir)
   v.x = - speed * math.sin(dir)
   v.z = speed * math.cos(dir)
-  if self._fly then
+  if self._fly or self._aquatic then
     local off = target.y - pos.y
     if off ~= 0 then
       v.y = speed * off / math.abs(off) / 2
@@ -595,13 +653,19 @@ function nmobs:new_destination(dtype, object)  -- self._new_destination
       local toward = vector.add(pos, vector.direction(opos, pos))
       minp = vector.subtract(toward, 15)
       maxp = vector.add(toward, 15)
-      if not self._fly then
+      if not (self._fly or self._aquatic) then
         minp.y = pos.y - 3
         maxp.y = pos.y + 3
       end
     end
 
-    local nodes = minetest.find_nodes_in_area_under_air(minp, maxp, nonliquids)
+    local nodes
+    if self._aquatic then
+      nodes = minetest.find_nodes_in_area(minp, maxp, self._environment)
+    else
+      nodes = minetest.find_nodes_in_area_under_air(minp, maxp, nonliquids)
+    end
+
     if nodes and #nodes > 0 then
       dest = nodes[math.random(#nodes)]
     end
@@ -681,8 +745,15 @@ function nmobs:find_prey()  -- self._find_prey
     opos.y = opos.y + 1.5
     local p = self:_get_pos()
     p.y = p.y + self._viewpoint
-    if vector.distance(p, opos) < self._vision and minetest.line_of_sight(p, opos) then
-      prey[#prey+1] = player
+    if vector.distance(p, opos) < self._vision and self:_line_of_sight(p, opos) then
+      if self._aquatic then
+        local n = minetest.get_node_or_nil(opos)
+        if n and self._environment_match[n.name] then
+          prey[#prey+1] = player
+        end
+      else
+        prey[#prey+1] = player
+      end
     end
   end
   if #prey > 0 then
@@ -1221,6 +1292,7 @@ function nmobs.register_mob(def)
     visual_size = sz,
     _aggressive_behavior = good_def._aggressive_behavior or nmobs.aggressive_behavior,
     _animation = good_def.animation,
+    _aquatic = good_def.aquatic,
     _armor_groups = good_def.armor,
     _attacks_player = good_def.attacks_player,
     _change_animation = good_def.change_animation or nmobs.change_animation,
@@ -1228,6 +1300,7 @@ function nmobs.register_mob(def)
     _diurnal = good_def.diurnal,
     _drops = good_def.drops or {},
     _environment = good_def.environment,
+    _environment_match = {},
     _fall = good_def._fall or nmobs.fall,
     _fearful_behavior = good_def._fearful_behavior or nmobs.fearful_behavior,
     _fight = good_def._fight or nmobs.fight,
@@ -1242,6 +1315,7 @@ function nmobs.register_mob(def)
     _is_a_mob = true,
     _last_step = 0,
     _lifespan = (good_def.lifespan or 200),
+    _line_of_sight = (good_def._line_of_sight or nmobs.line_of_sight),
     _looks_for = good_def.looks_for,
     _name = name,
     _new_destination = good_def._new_destination or nmobs.new_destination,
@@ -1280,6 +1354,10 @@ function nmobs.register_mob(def)
     proto.visual = 'mesh'
     proto.mesh = good_def.mesh
     proto.textures = good_def.textures
+  end
+
+  for _, e in pairs(proto._environment) do
+    proto._environment_match[e] = true
   end
 
   nmobs.mobs[name] = proto
