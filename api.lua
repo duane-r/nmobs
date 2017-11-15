@@ -14,7 +14,8 @@ local noise_rarity = 100
 local run_if_cant_hit = 5
 local stand_and_fight = 40
 local terminal_height = 10
-local time_grain = 0.5
+local time_grain = 1
+local hop = false  -- Set to make mobs hop while moving.
 
 -- These relate to making mobs tougher at the outer edges
 --  of the world.
@@ -347,7 +348,7 @@ function nmobs:fight()  -- self._fight
     if los then
       -- in punching range
       local thp = self._target:get_hp()
-      self:_punch(self._target, 1, self._weapon_capabilities)
+      self:_punch(self._target, time_grain, self._weapon_capabilities)
       if thp - self._target:get_hp() >= 1 then
         self._cant_hit = minetest.get_gametime()
       end
@@ -578,6 +579,11 @@ function nmobs:travel(speed)  -- self._travel
 
   local pos = self:_get_pos()
   local dir = nmobs.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
+
+  if hop and not self.mesh then
+    pos.y = pos.y + 0.1
+    self.object:set_pos(pos)
+  end
 
   if self._aquatic and self._state ~= 'fleeing' then
     local n = minetest.get_node_or_nil(pos)
