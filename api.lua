@@ -595,10 +595,15 @@ function nmobs:travel(speed)  -- self._travel
 
     if actual_speed < 0.5 and minetest.get_gametime() - self._chose_destination > 1.5 then
       -- We've hit an obstacle.
-      if not self._diggable then
-        self._destination = nil
-      elseif self:_tunnel() then
-        return
+      if self.collisionbox[5] - self.collisionbox[2] < 0.5 and math.random(2) == 1 then
+        pos.y = pos.y + 1
+        self.object:set_pos(pos)
+      else
+        if not self._diggable then
+          self._destination = nil
+        elseif self:_tunnel() then
+          return
+        end
       end
     end
   end
