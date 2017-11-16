@@ -11,22 +11,27 @@
 do
   local def = {
     armor_class = 7,
-    collisionbox = { -0.2, -0.7, -0.2, 0.2, -0.5, 0.2 },
     damage = 0.5,
     drops = {
       { name = 'mobs:rat_dead' },
     },
     environment = { 'default:stone', 'default:dirt_with_grass', 'default:dirt_with_dry_grass' },
     hit_dice = 0,
-    mesh = 'mobs_rat.b3d',
     name = 'rat',
+    nodebox = {
+      {-0.125, -0.5, -0.125, 0.125, -0.25, 0.25}, -- NodeBox1
+      {-0.0902808, -0.5, 0.3125, 0.0902807, -0.3125, 0.375}, -- NodeBox2
+      {-0.0625, -0.46733, 0.375, 0.0625, -0.342045, 0.4375}, -- NodeBox3
+      {-0.0159242, -0.435511, -0.5, 0.0179147, -0.405682, -0.1875}, -- NodeBox4
+      {-0.103507, -0.5, 0.25, 0.107488, -0.284375, 0.3125}, -- NodeBox5
+      {-0.091564, -0.471307, -0.1875, 0.0935545, -0.282386, -0.125}, -- NodeBox6
+      {0.055, -0.316779, 0.262046, 0.13, -0.202387, 0.2925}, -- NodeBox7
+      {-0.13, -0.316779, 0.262046, -0.055, -0.202387, 0.2925}, -- NodeBox8
+    },
     run_speed = 2,
     scared = true,
+    size = 0.5,
     sound = 'mobs_rat',
-    textures = {
-      { "mobs_rat.png" },
-      { "mobs_rat2.png" },
-    },
     walk_speed = 1,
   }
 
@@ -35,13 +40,13 @@ do
 
   minetest.register_craftitem(":mobs:rat_dead", {
     description = "Dead Rat",
-    inventory_image = "mobs_rat_inventory.png",
+    inventory_image = "nmobs_rat_inventory.png",
   })
 
   -- cooked rat, yummy!
   minetest.register_craftitem(":mobs:rat_cooked", {
     description = "Cooked Rat",
-    inventory_image = "mobs_rat_inventory.png",
+    inventory_image = "nmobs_rat_cooked.png",
     on_use = minetest.item_eat(2),
   })
 
