@@ -2,9 +2,7 @@
 -- Copyright Duane Robertson (duane@duanerobertson.com), 2017
 -- Distributed under the LGPLv2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
--- Model and textures are Copyright (c) 2014 by PilzAdam and
---  KrupnovPavel and distributed under the MIT license.
-
+-- The nodebox and textures are distributed as Public Domain (WTFPL).
 
 do
   local def1 = {
