@@ -2,11 +2,7 @@
 -- Copyright Duane Robertson (duane@duanerobertson.com), 2017
 -- Distributed under the LGPLv2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
--- Textures, sounds, and model
--- Copyright (c) 2014 Krupnov Pavel and 2016 TenPlus1
--- Distributed under the MIT license
--- Rat by PilzAdam
-
+-- The nodebox and textures are distributed as Public Domain (WTFPL).
 
 do
   local def = {
