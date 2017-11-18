@@ -243,7 +243,11 @@ function nmobs:fall()  -- self._fall
   pos = vector.round(pos)
 
   if self._fly then
-    grav = 0
+    if self._state == 'standing' then
+      grav = -2
+    else
+      grav = 0
+    end
   end
 
   local pos_below = table.copy(pos)
@@ -492,7 +496,7 @@ function nmobs.walk_run(self, max_speed, new_dest_type, fail_chance, fail_action
   end
 
   if self._destination then
-    if vector.horizontal_distance(pos, self._destination) < max_speed * 2 then
+    if (self._fly and vector.distance(pos, self._destination) <= max_speed) or (not self._fly and vector.horizontal_distance(pos, self._destination) <= max_speed) then
       -- We've arrived.
       self._destination = nil
       if self._state ~= 'fleeing' then
@@ -580,7 +584,7 @@ function nmobs:travel(speed)  -- self._travel
   local pos = self:_get_pos()
   local dir = nmobs.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
 
-  if hop and not self.mesh then
+  if (hop or self._hops) and not self.mesh then
     pos.y = pos.y + 0.1
     self.object:set_pos(pos)
   end
@@ -602,7 +606,7 @@ function nmobs:travel(speed)  -- self._travel
     if actual_speed < 0.5 and minetest.get_gametime() - self._chose_destination > 1.5 then
       -- We've hit an obstacle.
       if self.collisionbox[5] - self.collisionbox[2] < 0.5 and math.random(2) == 1 then
-        pos.y = pos.y + 1
+        pos.y = pos.y + 1.2
         self.object:set_pos(pos)
       else
         if not self._diggable then
@@ -620,6 +624,14 @@ function nmobs:travel(speed)  -- self._travel
   v.z = speed * math.cos(dir)
   if self._fly or self._aquatic then
     local off = target.y - pos.y
+
+    if self._fly then
+      local n = minetest.get_node_or_nil({x=pos.x, y=pos.y-1, z=pos.z})
+      if n and minetest.registered_items[n.name] and minetest.registered_items[n.name].walkable then
+        off = off + 1
+      end
+    end
+
     if off ~= 0 then
       v.y = speed * off / math.abs(off) / 2
     end

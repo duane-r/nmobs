@@ -6,7 +6,7 @@
 
 do
   local def1 = {
-    attacks_player = 10,
+    attacks_player = true,
     armor_class = 6,
     damage = 2,
     drops = {
