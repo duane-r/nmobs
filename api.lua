@@ -12,6 +12,8 @@ local bored_with_walking = 20
 local gravity = -10
 local noise_rarity = 100
 local run_if_cant_hit = 5
+local spawn = true
+local stand = false
 local stand_and_fight = 40
 local terminal_height = 10
 local time_grain = 1
@@ -179,6 +181,10 @@ function nmobs:step(dtime)
   end
 
   self:_terrain_effects()
+
+  if stand then
+    self._state = 'standing'
+  end
 
   if self._state ~= 'fighting' then
     self._cant_hit = nil
@@ -1386,29 +1392,31 @@ function nmobs.register_mob(def)
   nmobs.mobs[name] = proto
   minetest.register_entity(':nmobs:'..name, proto)
 
-  if proto._spawn_table then
-    for _, instance in pairs(proto._spawn_table) do
+  if spawn then
+    if proto._spawn_table then
+      for _, instance in pairs(proto._spawn_table) do
+        minetest.register_abm({
+          nodenames = (instance.nodes or proto._environment or {'default:dirt_with_grass'}),
+          neighbors = {'air'},
+          interval = (instance.interval or 30),
+          chance = (instance.rarity or 20000),
+          catch_up = false,
+          action = function(...)
+            nmobs.abm_callback(name, ...)
+          end,
+        })
+      end
+    elseif proto._environment then
       minetest.register_abm({
-        nodenames = (instance.nodes or proto._environment or {'default:dirt_with_grass'}),
+        nodenames = proto._environment,
         neighbors = {'air'},
-        interval = (instance.interval or 30),
-        chance = (instance.rarity or 20000),
+        interval = 30,
+        chance = proto._rarity,
         catch_up = false,
         action = function(...)
           nmobs.abm_callback(name, ...)
         end,
       })
     end
-  elseif proto._environment then
-    minetest.register_abm({
-      nodenames = proto._environment,
-      neighbors = {'air'},
-      interval = 30,
-      chance = proto._rarity,
-      catch_up = false,
-      action = function(...)
-        nmobs.abm_callback(name, ...)
-      end,
-    })
   end
 end
