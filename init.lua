@@ -48,8 +48,9 @@ function vector.horizontal_distance(p1, p2)
 end
 
 
-dofile(nmobs.path .. "/ape.lua")
 dofile(nmobs.path .. "/api.lua")
+
+dofile(nmobs.path .. "/ape.lua")
 dofile(nmobs.path .. "/bear.lua")
 dofile(nmobs.path .. "/bee.lua")
 dofile(nmobs.path .. "/boulder.lua")
