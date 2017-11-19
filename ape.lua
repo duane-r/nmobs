@@ -4,6 +4,49 @@
 
 -- The nodebox and textures are distributed as Public Domain (WTFPL).
 
+-- This tables looks up nodes that aren't already stored.
+local node = setmetatable({}, {
+  __index = function(t, k)
+    if not (t and k and type(t) == 'table') then
+      return
+    end
+
+    t[k] = minetest.get_content_id(k)
+    return t[k]
+  end
+})
+
+
+local node_name = setmetatable({}, {
+  __index = function(t, k)
+    if not (t and k and type(t) == 'table') then
+      return
+    end
+
+    t[k] = minetest.get_name_from_content_id(k)
+    return t[k]
+  end
+})
+
+
+local clearable = setmetatable({}, {
+  __index = function(t, k)
+    if not (t and k and type(t) == 'table') then
+      return
+    end
+
+    if not minetest.registered_items[node_name[k]] then
+      t[k] = false
+      return false
+    end
+
+    t[k] = (minetest.registered_items[node_name[k]].groups.snappy or minetest.registered_items[node_name[k]].groups.choppy) and true or false
+    return t[k]
+  end
+})
+
+
+local last_clear
 do
   local def1 = {
     attacks_player = 10,
@@ -37,5 +80,67 @@ do
     },
   }
 
+  local def2 = table.copy(def1)
+  def2.environment = {}
+  def2.name = 'kong'
+  def2.textures = { 'nmobs_ape_top.png', 'nmobs_ape_bottom.png', 'nmobs_ape_right.png', 'nmobs_ape_left.png', 'nmobs_ape_front.png', 'nmobs_ape_back.png' }
+  def2.run_speed = 5
+  def2.size = 20
+  def2.walk_speed = 5
+  def2._terrain_effects = function(self)
+    local time = minetest.get_gametime()
+    if not last_clear then
+      last_clear = time
+    end
+
+    if time - last_clear > 3 then
+      local pos = self.object:get_pos()
+      if not pos then
+        return
+      end
+
+      local clow = {x=self.collisionbox[1], y=self.collisionbox[2], z=self.collisionbox[3]}
+      local chigh = {x=self.collisionbox[4], y=self.collisionbox[5], z=self.collisionbox[6]}
+      clow = vector.multiply(clow, 2)
+      chigh = vector.multiply(chigh, 2)
+      local minp = vector.add(pos, clow)
+      minp.y = minp.y - 10
+      local maxp = vector.add(pos, chigh)
+      maxp.y = maxp.y + 10
+      local vm = minetest.get_voxel_manip(minp, maxp)
+      if not vm then
+        return
+      end
+
+      local emin, emax = vm:read_from_map(minp, maxp)
+      local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+      local data = vm:get_data()
+
+      for z = minp.z, maxp.z do
+        local dz = z - minp.z
+        for x = minp.x, maxp.x do
+          local dx = x - minp.x
+          local ivm = area:index(x, minp.y, z)
+          for y = minp.y, maxp.y do
+            if data[ivm] ~= node['air'] and data[ivm] ~= node['ignore'] and clearable[data[ivm]] then
+              data[ivm] = node['air']
+            end
+            ivm = ivm + area.ystride
+          end
+        end
+      end
+
+      vm:set_data(data)
+      vm:update_liquids()
+      vm:write_to_map()
+      vm:update_map()
+
+      last_clear = minetest.get_gametime()
+    end
+
+    nmobs.terrain_effects(self)
+  end
+
   nmobs.register_mob(def1)
+  nmobs.register_mob(def2)
 end

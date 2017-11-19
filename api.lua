@@ -63,6 +63,7 @@ local check = {
   {'glow', 'number', false},
   {'higher_than', 'number', false},
   {'hit_dice', 'number', false},
+  {'hops', 'boolean', false},
   {'hurts_me', 'table', false},
   {'looks_for', 'table', false},
   {'lower_than', 'number', false},
@@ -591,7 +592,7 @@ function nmobs:travel(speed)  -- self._travel
   local dir = nmobs.dir_to_target(pos, target) + math.random() * 0.5 - 0.25
 
   if (hop or self._hops) and not self.mesh then
-    pos.y = pos.y + 0.1
+    pos.y = pos.y + 0.3
     self.object:set_pos(pos)
   end
 
@@ -610,9 +611,10 @@ function nmobs:travel(speed)  -- self._travel
     local actual_speed = vector.horizontal_length(velocity)
 
     if actual_speed < 0.5 and minetest.get_gametime() - self._chose_destination > 1.5 then
+      local ysize = self.collisionbox[5] - self.collisionbox[2]
       -- We've hit an obstacle.
-      if self.collisionbox[5] - self.collisionbox[2] < 0.5 and math.random(2) == 1 then
-        pos.y = pos.y + 1.2
+      if ysize < 0.5 or ysize > 5 and math.random(2) == 1 then
+        pos.y = pos.y + math.max(1.2, ysize)
         self.object:set_pos(pos)
       else
         if not self._diggable then
@@ -1242,6 +1244,7 @@ function nmobs.register_mob(def)
           end
         end
       end
+
       -- Since the collision box doesn't turn with the mob,
       --  make it the average of the z and x dimentions.
       cbox[1] = (cbox[1] + cbox[3]) / 2
@@ -1328,7 +1331,7 @@ function nmobs.register_mob(def)
     _damage = good_def.damage,
     _diurnal = good_def.diurnal,
     _drops = good_def.drops or {},
-    _environment = good_def.environment,
+    _environment = good_def.environment or {},
     _environment_match = {},
     _fall = good_def._fall or nmobs.fall,
     _fearful_behavior = good_def._fearful_behavior or nmobs.fearful_behavior,
@@ -1340,6 +1343,7 @@ function nmobs.register_mob(def)
     _fly = good_def.fly,
     _get_pos = good_def._get_pos or nmobs.get_pos,
     _hit_dice = (good_def.hit_dice or 1),
+    _hops = good_def.hops,
     _hurts_me = good_def.hurts_me or default_hurts_me,
     _is_a_mob = true,
     _last_step = 0,
@@ -1406,7 +1410,7 @@ function nmobs.register_mob(def)
           end,
         })
       end
-    elseif proto._environment then
+    elseif proto._environment and #proto._environment > 0 then
       minetest.register_abm({
         nodenames = proto._environment,
         neighbors = {'air'},
@@ -1417,6 +1421,8 @@ function nmobs.register_mob(def)
           nmobs.abm_callback(name, ...)
         end,
       })
+    else
+      print('Nmobs: not spawning '..good_def.name)
     end
   end
 end
