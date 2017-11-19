@@ -1,18 +1,6 @@
-The textures of most mobs are copied from Cute Cubic Mobs
+The textures of some mobs are copied from Cute Cubic Mobs
 https://github.com/Napiophelios/ccmobs
 and are distributed as Public Domain (WTFPL).
-
-The fox model and textures are taken from D00med mobs,
-Copyright (c) 2016 and D00Med, and distributed under
-the CC by SA 3.0 license.
-https://forum.minetest.net/viewtopic.php?f=9&t=14382&hilit=dmobs
-
-bear models and textures are Copyright (c) 2014 Krupnov Pavel and distributed under the MIT license.
-https://forum.minetest.net/viewtopic.php?f=9&t=8798&hilit=kpgmobs
-
-Zombie textures are taken from Nathan's Zombies
-and distributed under the CC by SA 3.0 license.
-https://forum.minetest.net/viewtopic.php?f=9&t=14187&hilit=nathan+zombies
 
 Meat and leather textures are taken from TenPlus1's mobs_redo
 and distributed under the MIT license.
