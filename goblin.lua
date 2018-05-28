@@ -6,6 +6,7 @@
 
 
 nmobs.time_factor = 10
+local terrain_mod = 'flats'
 
 
 local drops = {
@@ -14,7 +15,7 @@ local drops = {
   {name = "default:sword_stone", chance = 5},
   {name = "default:torch", chance = 3, max = 10},
   {name = "nmobs:glowing_fungus", chance = 3, min = 2, max = 5},
-  {name = "squaresville_c:mushroom_steak", chance = 2, max = 2},
+  {name = terrain_mod .. ":mushroom_steak", chance = 2, max = 2},
 }
 
 local function goblin_travel(self, speed)
@@ -52,7 +53,7 @@ local function goblin_replace(self)
   end
 
   if math.random(3) == 1 then
-    ns = minetest.find_nodes_in_area(minp, maxp, {'squaresville_c:giant_mushroom_stem'})
+    ns = minetest.find_nodes_in_area(minp, maxp, {terrain_mod .. ':giant_mushroom_stem'})
     if ns and #ns > 0 then
       local pl
       for _, p in pairs(ns) do
@@ -62,7 +63,7 @@ local function goblin_replace(self)
       end
       for i = 1, 3 do
         local n = minetest.get_node_or_nil(pl)
-        if n and (n.name == 'squaresville_c:giant_mushroom_stem' or n.name == 'squaresville_c:giant_mushroom_cap' or n.name == 'squaresville_c:huge_mushroom_cap') then
+        if n and (n.name == terrain_mod .. ':giant_mushroom_stem' or n.name == terrain_mod .. ':giant_mushroom_cap' or n.name == terrain_mod .. ':huge_mushroom_cap') then
           minetest.remove_node(pl)
           pl.y = pl.y + 1
         end
@@ -101,8 +102,8 @@ local function goblin_replace(self)
       elseif sr == 2 then
         minetest.set_node(p, {name='default:dirt'})
       elseif sr == 3 then
-        if minetest.registered_nodes['squaresville_c:glowing_fungal_stone'] then
-          minetest.set_node(p, {name='squaresville_c:glowing_fungal_stone'})
+        if minetest.registered_nodes[terrain_mod .. ':glowing_fungal_stone'] then
+          minetest.set_node(p, {name=terrain_mod .. ':glowing_fungal_stone'})
         else
           minetest.set_node(p, {name='nmobs:mossycobble_slimy'})
         end
@@ -115,15 +116,8 @@ local function goblin_replace(self)
   end
 end
 
-nmobs.register_mob({
-  attacks_player = true,
-  can_dig = {'group:cracky', 'group:crumbly'},
-  drops = drops,
-  environment = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', 'squaresville_c:giant_mushroom_stem'},
-  hit_dice = 2,
-  name = 'goblin',
-  nocturnal = true,
-  nodebox = {
+do
+  local nbx = {
     {-0.25, -0.3125, -0.25, 0.25, 0.1875, 0.25}, -- body1
     {-0.25, -0.5, -0.125, -0.0625, -0.3125, 0.0625}, -- leftleg
     {0.0625, -0.5, -0.125, 0.25, -0.3125, 0.0625}, -- rightleg
@@ -148,87 +142,73 @@ nmobs.register_mob({
     {-0.0625, 0.3125, 0.1875, 0.0625, 0.375, 0.25}, -- nose
     {-0.4375, -0.375, 0.0625, -0.375, 0.125, 0.125}, -- leftarm2
     {0.375, -0.375, 0.0625, 0.4375, 0.125, 0.125}, -- rightarm2
-  },
-  _travel = goblin_travel,
-  _replace = goblin_replace,
-  size = 0.7,
-  spawn = {
-    {
-      nodes = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville:concrete', 'squaresville:road', 'squaresville:sidewalk', 'squaresville:floor_ceiling', 'squaresville:concrete_broken', 'squaresville:road_broken', 'squaresville:sidewalk_broken', 'squaresville:floor_ceiling_broken'},
-      rarity = 20000,
+  }
+
+  nmobs.register_mob({
+    attacks_player = true,
+    can_dig = {'group:cracky', 'group:crumbly'},
+    drops = drops,
+    environment = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', terrain_mod .. ':giant_mushroom_stem'},
+    hit_dice = 2,
+    name = 'goblin',
+    nocturnal = true,
+    nodebox = nbx,
+    _travel = goblin_travel,
+    _replace = goblin_replace,
+    size = 0.7,
+    spawn = {
+      {
+        nodes = {'default:stone', terrain_mod .. ':stone_with_algae', terrain_mod .. ':stone_with_lichen'},
+        rarity = 20000,
+      },
+      {
+        nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', terrain_mod .. ':giant_mushroom_cap', terrain_mod .. ':fungal_tree_leaves_1', terrain_mod .. ':fungal_tree_leaves_2', terrain_mod .. ':fungal_tree_leaves_3', terrain_mod .. ':fungal_tree_leaves_4'},
+        rarity = 5000,
+      },
+      {
+        nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
+        rarity = 5000,
+      },
     },
-    {
-      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'squaresville_c:giant_mushroom_cap', 'squaresville_c:fungal_tree_leaves_1', 'squaresville_c:fungal_tree_leaves_2', 'squaresville_c:fungal_tree_leaves_3', 'squaresville_c:fungal_tree_leaves_4'},
-      rarity = 5000,
-    },
-    {
-      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
-      rarity = 5000,
-    },
-  },
-  tames = {'default:diamond'},
-})
+    tames = {'default:diamond'},
+  })
 
 
-drops = table.copy(drops)
-drops[#drops+1] = {name = "default:coal_lump", chance = 2, max = 2}
-drops[#drops+1] = {name = "default:copper_lump", chance = 4, max = 2}
-drops[#drops+1] = {name = "default:iron_lump", chance = 6, max = 2}
+  drops = table.copy(drops)
+  drops[#drops+1] = {name = "default:coal_lump", chance = 2, max = 2}
+  drops[#drops+1] = {name = "default:copper_lump", chance = 4, max = 2}
+  drops[#drops+1] = {name = "default:iron_lump", chance = 6, max = 2}
 
-nmobs.register_mob({
-  armor_class = 8,
-  attacks_player = true,
-  can_dig = {'group:cracky', 'group:crumbly'},
-  drops = drops,
-  environment = {'default:mossycobble', 'default:dirt', 'default:stone_with_algae', 'default:stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', 'squaresville_c:giant_mushroom_stem'},
-  hit_dice = 4,
-  name = 'goblin basher',
-  nocturnal = true,
-  nodebox = {
-    {-0.25, -0.3125, -0.25, 0.25, 0.1875, 0.25}, -- body1
-    {-0.25, -0.5, -0.125, -0.0625, -0.3125, 0.0625}, -- leftleg
-    {0.0625, -0.5, -0.125, 0.25, -0.3125, 0.0625}, -- rightleg
-    {0.0625, -0.5, -0.125, 0.3125, -0.4375, 0.1875}, -- rightfoot
-    {-0.3125, -0.5, -0.125, -0.0625, -0.4375, 0.1875}, -- leftfoot
-    {0.25, -0.25, -0.25, 0.3125, 0.1875, 0.25}, -- body2
-    {-0.3125, -0.25, -0.25, -0.25, 0.1875, 0.25}, -- body3
-    {-0.25, -0.25, 0.25, 0.25, 0.1875, 0.3125}, -- body4
-    {-0.25, -0.25, -0.3125, 0.25, 0.1875, -0.25}, -- body5
-    {-0.25, 0.25, -0.25, 0.25, 0.3125, 0.1875}, -- body6
-    {-0.1875, 0.3125, -0.1875, 0.1875, 0.375, 0.1875}, -- body7
-    {-0.1875, 0.375, 0.0625, -0.0625, 0.4375, 0.1875}, -- lefteye
-    {0.0625, 0.375, 0.0625, 0.1875, 0.4375, 0.1875}, -- righteye
-    {-0.4375, 0.0625, 0.0625, -0.3125, 0.125, 0.125}, -- leftarm1
-    {0.3125, 0.0625, 0.0625, 0.4375, 0.125, 0.125}, -- rightarm1
-    {0.375, -0.375, 0.0625, 0.5, -0.1875, 0.125}, -- righthand
-    {-0.5, -0.375, 0.0625, -0.375, -0.1875, 0.125}, -- lefthand
-    {-0.25, 0.1875, -0.25, 0.25, 0.25, 0.1875}, -- body8
-    {-0.1875, 0.1875, 0.1875, -0.125, 0.3125, 0.25}, -- lip1
-    {0.125, 0.1875, 0.1875, 0.1875, 0.3125, 0.25}, -- lip2
-    {-0.1875, 0.25, 0.1875, 0.1875, 0.3125, 0.25}, -- lip3
-    {-0.0625, 0.3125, 0.1875, 0.0625, 0.375, 0.25}, -- nose
-    {-0.4375, -0.375, 0.0625, -0.375, 0.125, 0.125}, -- leftarm2
-    {0.375, -0.375, 0.0625, 0.4375, 0.125, 0.125}, -- rightarm2
-  },
-  _travel = goblin_travel,
-  _replace = goblin_replace,
-  size = 0.8,
-  spawn = {
-    {
-      nodes = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville:concrete', 'squaresville:road', 'squaresville:sidewalk', 'squaresville:floor_ceiling', 'squaresville:concrete_broken', 'squaresville:road_broken', 'squaresville:sidewalk_broken', 'squaresville:floor_ceiling_broken'},
-      rarity = 50000,
+  nmobs.register_mob({
+    armor_class = 8,
+    attacks_player = true,
+    can_dig = {'group:cracky', 'group:crumbly'},
+    drops = drops,
+    environment = {'default:mossycobble', 'default:dirt', terrain_mod .. ':stone_with_algae', terrain_mod .. ':stone_with_lichen', 'default:stone_with_coal', 'default:stone_with_iron', 'default:stone_with_copper', 'default:stone_with_gold', 'default:stone_with_mese', 'default:stone_with_diamond', terrain_mod .. ':giant_mushroom_stem'},
+    hit_dice = 4,
+    name = 'goblin basher',
+    nocturnal = true,
+    nodebox = nbx,
+    _travel = goblin_travel,
+    _replace = goblin_replace,
+    size = 0.8,
+    spawn = {
+      {
+        nodes = {'default:stone', terrain_mod .. ':stone_with_algae', terrain_mod .. ':stone_with_lichen'},
+        rarity = 50000,
+      },
+      {
+        nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', terrain_mod .. ':giant_mushroom_cap', terrain_mod .. ':fungal_tree_leaves_1', terrain_mod .. ':fungal_tree_leaves_2', terrain_mod .. ':fungal_tree_leaves_3', terrain_mod .. ':fungal_tree_leaves_4'},
+        rarity = 5000,
+      },
+      {
+        nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
+        rarity = 5000,
+      },
     },
-    {
-      nodes = {'flowers:mushroom_brown', 'flowers:mushroom_red', 'squaresville_c:giant_mushroom_cap', 'squaresville_c:fungal_tree_leaves_1', 'squaresville_c:fungal_tree_leaves_2', 'squaresville_c:fungal_tree_leaves_3', 'squaresville_c:fungal_tree_leaves_4'},
-      rarity = 5000,
-    },
-    {
-      nodes = {'default:mossycobble', 'nmobs:mossycobble_slimy'},
-      rarity = 5000,
-    },
-  },
-  tames = {'default:diamond'},
-})
+    tames = {'default:diamond'},
+  })
+end
 
 
 ---------------------------------------------------------------
@@ -236,35 +216,37 @@ nmobs.register_mob({
 ---------------------------------------------------------------
 
 
-local mushrooms = {"flowers:mushroom_brown", "flowers:mushroom_red"}
-minetest.register_node("nmobs:fairy_light", {
-  description = "Fairy Light",
-  drawtype = "plantlike",
-  visual_scale = 0.75,
-  tiles = {"nmobs_fairy_light.png"},
-  paramtype = "light",
-  sunlight_propagates = true,
-  light_source = 8,
-  walkable = false,
-  diggable = false,
-  pointable = false,
-  is_ground_content = false,
-  on_construct = function(pos)
-    local timer = minetest.get_node_timer(pos)
-    local max = 3 * (nmobs.time_factor or 10)
-    if timer then
-      timer:set(max, max > 1 and math.random(max - 1) or 0)
-    end
-  end,
-  on_timer = function(pos, elapsed)
-    local node_down = minetest.get_node_or_nil({x=pos.x, y=pos.y-1, z=pos.z})
-    if node_down and node_down.name == 'default:dirt' then
-      minetest.set_node(pos, {name=mushrooms[math.random(#mushrooms)]})
-    else
-      minetest.remove_node(pos)
-    end
-  end,
-})
+do
+  local mushrooms = {"flowers:mushroom_brown", "flowers:mushroom_red"}
+  minetest.register_node("nmobs:fairy_light", {
+    description = "Fairy Light",
+    drawtype = "plantlike",
+    visual_scale = 0.75,
+    tiles = {"nmobs_fairy_light.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
+    light_source = 8,
+    walkable = false,
+    diggable = false,
+    pointable = false,
+    is_ground_content = false,
+    on_construct = function(pos)
+      local timer = minetest.get_node_timer(pos)
+      local max = 3 * (nmobs.time_factor or 10)
+      if timer then
+        timer:set(max, max > 1 and math.random(max - 1) or 0)
+      end
+    end,
+    on_timer = function(pos, elapsed)
+      local node_down = minetest.get_node_or_nil({x=pos.x, y=pos.y-1, z=pos.z})
+      if node_down and node_down.name == 'default:dirt' then
+        minetest.set_node(pos, {name=mushrooms[math.random(#mushrooms)]})
+      else
+        minetest.remove_node(pos)
+      end
+    end,
+  })
+end
 
 
 ---------------------------------------------------------------

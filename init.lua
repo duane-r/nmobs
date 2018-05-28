@@ -11,11 +11,12 @@ nmobs.world = minetest.get_worldpath()
 nmobs.mobs = {}
 
 
-local creative_mode = minetest.setting_getbool('creative_mode')
-local damage_mode = minetest.setting_getbool('enable_damage')
+local creative_mode = minetest.settings:get_bool('creative_mode')
+local damage_mode = minetest.settings:get_bool('enable_damage')
+print('damage_mode' .. dump(damage_mode))
 
 
-nmobs.nice_mobs = minetest.setting_getbool('nmobs_nice_mobs') or creative_mode or not damage_mode
+nmobs.nice_mobs = minetest.settings:get_bool('nmobs_nice_mobs') or creative_mode or not damage_mode
 if nmobs.nice_mobs == nil then
 	nmobs.nice_mobs = true
 end

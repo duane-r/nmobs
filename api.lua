@@ -7,6 +7,7 @@
 -- ant/termite
 
 
+local anger_follow_time = 30
 local bored_with_standing = 10
 local bored_with_walking = 20
 local gravity = -10
@@ -51,7 +52,7 @@ local DEBUG
 -- These are the only legitimate properties to pass to register.
 local check = {
   {'animation', 'table', false},
-  {'armor_class', 'number', false},
+  {'armor_class', 'number', false},  -- D&D Armor Class
   {'aquatic', 'boolean', false},
   {'attacks_player', nil, false},
   {'collisionbox', 'table', false},
@@ -77,7 +78,7 @@ local check = {
   {'reach', 'number', false},
   {'replaces', 'table', false},
   {'run_speed', 'number', false},
-  {'scared', 'boolean', false},
+  {'scared', 'boolean', false},  -- causes the animal to run from humans
   {'size', 'number', false},
   {'spawn', 'table', false},
   {'sound', 'string', false},
@@ -341,7 +342,7 @@ function nmobs:fight()  -- self._fight
   end
 
   local dist = vector.distance(self:_get_pos(), opponent_pos) - self.collisionbox[4] + self.collisionbox[1]
-  if dist > self._vision then
+  if dist > self._vision and self._hp and not (os.time() - (self._wounded or 0) < anger_follow_time) then
     -- out of range
     self._target = nil
     self._state = 'standing'
@@ -610,7 +611,7 @@ function nmobs:travel(speed)  -- self._travel
     local velocity = self.object:get_velocity()
     local actual_speed = vector.horizontal_length(velocity)
 
-    if actual_speed < 0.5 and minetest.get_gametime() - self._chose_destination > 1.5 then
+    if actual_speed < math.min(0.5, (speed / 2)) and minetest.get_gametime() - self._chose_destination > 1.5 then
       local ysize = self.collisionbox[5] - self.collisionbox[2]
       -- We've hit an obstacle.
       if ysize < 0.5 or ysize > 5 and math.random(2) == 1 then
@@ -961,6 +962,8 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
     hp = hp - damage
   end
 
+  self._wounded = os.time()
+
   if hp < 1 then
     if bug then
       self._kill_me = true
@@ -992,9 +995,9 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
 
   self._target = puncher
   self._chose_destination = minetest.get_gametime()
-  if puncher and vector.distance(self:_get_pos(), puncher:get_pos()) > self._vision then
-    self._state = 'fleeing'
-  elseif puncher and self._cant_hit and minetest.get_gametime() - self._cant_hit > run_if_cant_hit then
+  --if puncher and vector.distance(self:_get_pos(), puncher:get_pos()) > self._vision then
+  --  self._state = 'fleeing'
+  if puncher and self._cant_hit and minetest.get_gametime() - self._cant_hit > run_if_cant_hit then
     self._state = 'fleeing'
   elseif hp < damage * 2 then
     self._state = 'fleeing'
@@ -1246,7 +1249,7 @@ function nmobs.register_mob(def)
       end
 
       -- Since the collision box doesn't turn with the mob,
-      --  make it the average of the z and x dimentions.
+      --  make it the average of the z and x dimensions.
       cbox[1] = (cbox[1] + cbox[3]) / 2
       cbox[4] = (cbox[4] + cbox[6]) / 2
       cbox[3] = cbox[1]
