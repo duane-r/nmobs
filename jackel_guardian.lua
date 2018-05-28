@@ -8,7 +8,7 @@
 nmobs.register_mob({
   attacks_player = true,
   armor_class = 6,
-  environment = {'default:stoneblock'},
+  --environment = {'default:stone_block'},
   fly = true,
   hit_dice = 5,
   name = 'jackel guardian',

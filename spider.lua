@@ -82,7 +82,7 @@ do
 		{name = "mobs:meat_raw", max = 3},
 		{name = "wool:black", max = 3},
 	}
-  def2.environment = { 'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_moss', 'squaresville_c:stone_with_lichen' }
+  def2.environment = { 'default:stone', 'flats:stone_with_algae', 'flats:stone_with_moss', 'flats:stone_with_lichen' }
   def2.glow = 2
   def2.name = 'spider_deep'
   def2.textures = { 'nmobs_spider_deep_top.png', 'nmobs_spider_deep_bottom.png', 'nmobs_spider_deep_right.png', 'nmobs_spider_deep_left.png', 'nmobs_spider_deep_front.png', 'nmobs_spider_deep_back.png' }

@@ -8,7 +8,7 @@
 nmobs.register_mob({
   attacks_player = true,
   damage = 0.2,
-  environment = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville_c:stone_with_moss', 'default:cobble', 'default:stone_block', 'default:mossycobble'},
+  environment = {'default:stone', 'flats:stone_with_algae', 'flats:stone_with_lichen', 'flats:stone_with_moss', 'default:cobble', 'default:mossycobble'},
   glow = 2,
   hit_dice = 2,
   name = 'slime_green',
@@ -19,11 +19,11 @@ nmobs.register_mob({
   run_speed = 0.2,
   spawn = {
     {
-      nodes = {'default:stone', 'squaresville_c:stone_with_algae', 'squaresville_c:stone_with_lichen', 'squaresville_c:stone_with_moss', 'default:cobble', 'default:stone_block', 'default:mossycobble'},
+      nodes = {'default:stone', 'flats:stone_with_algae', 'flats:stone_with_lichen', 'flats:stone_with_moss', 'default:cobble', 'default:mossycobble'},
       rarity = 20000,
     },
     {
-      nodes = {'squaresville_c:puddle_ooze'},
+      nodes = {'flats:puddle_ooze'},
       rarity = 20,
     },
   },

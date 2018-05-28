@@ -1,4 +1,4 @@
 bad_terrain?
 default
 status?
-squaresville_c?
+flats?
