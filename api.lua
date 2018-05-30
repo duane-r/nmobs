@@ -20,6 +20,12 @@ local terminal_height = 10
 local time_grain = 1
 local hop = false  -- Set to make mobs hop while moving.
 
+--local total_time = 0
+--local total_time_ct = 0
+--local start_time = minetest.get_us_time()
+local mob_count = 0
+local max_mobs_per_type = 4
+
 -- These relate to making mobs tougher at the outer edges
 --  of the world.
 local good_loot_chance = 10  -- chance = floor(difficulty - 1) / n
@@ -121,6 +127,13 @@ local damage_multiplier = {}
 local elixirs_mod = minetest.get_modpath('elixirs')
 
 
+--local function step_wrapper(self, dtime)
+--  total_time_ct = minetest.get_us_time()
+--  nmobs.step(self, dtime)
+--  total_time = total_time + minetest.get_us_time() - total_time_ct
+--end
+
+
 -- Executed by every mob, every step.
 function nmobs:step(dtime)
   -- Remove mobs outside of locked state.
@@ -174,9 +187,6 @@ function nmobs:step(dtime)
         end
         self._hp = math.floor(hp + 0.5)
       else
-        if DEBUG then
-          print('** resetting hp -- to fix minetest\'s dumbass entity handling')
-        end
         self.object:set_hp(self._hp)
       end
     end
@@ -1117,9 +1127,22 @@ function nmobs.abm_callback(name, pos, node, active_object_count, active_object_
     end
   end
 
+  local ct = 0
+  mob_count = 0
+  for _, o in pairs(minetest.luaentities) do
+    if o.name == 'nmobs:'..name and vector.distance(o.object:get_pos(), pos) < 300 then
+      ct = ct + 1
+    end
+    mob_count = mob_count + 1
+  end
+
+  if ct > max_mobs_per_type then
+    return
+  end
+
   local pos_above = {x=pos.x, y=pos.y+1, z=pos.z}
   local node_above = minetest.get_node_or_nil(pos_above)
-  if node_above and node_above.name == 'air' and active_object_count < 3 then
+  if node_above and node_above.name == 'air' and active_object_count_wider < 3 then
     pos_above.y = pos_above.y + 2
     minetest.add_entity(pos_above, 'nmobs:'..name)
     if DEBUG then
@@ -1164,6 +1187,22 @@ function nmobs:on_rightclick(clicker)
   elseif self._sound then
     minetest.sound_play(self._sound, {object = self.object})
   end
+end
+
+
+local function register_mob_abm(name, nodenames, interval, chance)
+  minetest.register_abm({
+    nodenames = nodenames,
+    neighbors = {'air'},
+    interval = interval,
+    chance = chance,
+    catch_up = false,
+    action = function(...)
+      --total_time_ct = minetest.get_us_time()
+      nmobs.abm_callback(name, ...)
+      --total_time = total_time + minetest.get_us_time() - total_time_ct
+    end,
+  })
 end
 
 
@@ -1402,30 +1441,21 @@ function nmobs.register_mob(def)
   if spawn then
     if proto._spawn_table then
       for _, instance in pairs(proto._spawn_table) do
-        minetest.register_abm({
-          nodenames = (instance.nodes or proto._environment or {'default:dirt_with_grass'}),
-          neighbors = {'air'},
-          interval = (instance.interval or 30),
-          chance = (instance.rarity or 20000),
-          catch_up = false,
-          action = function(...)
-            nmobs.abm_callback(name, ...)
-          end,
-        })
+        register_mob_abm(name, (instance.nodes or proto._environment or {'default:dirt_with_grass'}), (instance.interval or 30), (instance.rarity or 20000))
       end
     elseif proto._environment and #proto._environment > 0 then
-      minetest.register_abm({
-        nodenames = proto._environment,
-        neighbors = {'air'},
-        interval = 30,
-        chance = proto._rarity,
-        catch_up = false,
-        action = function(...)
-          nmobs.abm_callback(name, ...)
-        end,
-      })
+      register_mob_abm(name, proto._environment, 30, proto._rarity)
     else
       print('Nmobs: not spawning '..good_def.name)
     end
   end
 end
+
+
+
+--if DEBUG then
+--  minetest.register_on_shutdown(function()
+--    print('Nmobs took ' .. (total_time / (minetest.get_us_time() - start_time)))
+--    print('  mob count: ' .. mob_count)
+--  end)
+--end
