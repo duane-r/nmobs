@@ -2,6 +2,7 @@
 -- Copyright Duane Robertson (duane@duanerobertson.com), 2017
 -- Distributed under the LGPLv2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
+-- stun/fear statuses
 
 nmobs = {}
 nmobs = nmobs
@@ -50,6 +51,13 @@ end
 
 
 dofile(nmobs.path .. "/api.lua")
+
+minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing)
+	if nmobs:in_combat(user) then
+		return itemstack
+	end
+end)
+
 
 dofile(nmobs.path .. "/ape.lua")
 dofile(nmobs.path .. "/bear.lua")

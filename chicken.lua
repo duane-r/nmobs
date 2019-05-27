@@ -36,7 +36,7 @@ do
   def2.attacks_player = true
   def2.damage = 3
   def2.drops = nil
-  def2.environment = { 'default:stone', 'flats:stone_with_algae', 'flats:stone_with_moss', 'flats:stone_with_lichen', 'default:dirt_with_rainforest_litter' }
+  def2.environment = { 'default:stone', 'mapgen:stone_with_algae', 'mapgen:stone_with_moss', 'mapgen:stone_with_lichen', 'default:dirt_with_rainforest_litter' }
   def2.hit_dice = 5
   def2.name = 'cockatrice'
   def2.size = 1

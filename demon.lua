@@ -12,10 +12,10 @@ nmobs.register_mob({
   environment = {'squaresville_c:hot_iron', 'squaresville_c:hot_brass'},
   fly = true,
   glow = 2,
-  higher = -10200,
+  --higher = -10200,
   hit_dice = 4,
   hurts_me = {},
-  lower = -9800,
+  --lower = -9800,
   name = 'demon',
   nodebox = {
     {-0.1875, -0.3125, -0.1875, 0.1875, 0.1875, 0.1875}, -- NodeBox1
