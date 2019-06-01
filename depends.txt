@@ -1,4 +1,0 @@
-bad_terrain?
-default
-status?
-flats?

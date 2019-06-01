@@ -21,9 +21,10 @@ do
         end
 
         local damage = 1
-        if status_mod.db.status and status_mod.db.status[player_name] and status_mod.db.status[player_name]['poisoned'] and status_mod.db.status[player_name]['poisoned']['damage'] then
-          damage = tonumber(status_mod.db.status[player_name]['poisoned']['damage'])
-        end
+        local status = status_mod.get_status(player_name, 'poisoned')
+		if status and status.damage then
+			damage = tonumber(status.damage)
+		end
 
         local hp = player:get_hp()
         if hp and type(hp) == 'number' then
@@ -62,7 +63,7 @@ do
       {0, -0.5, 0.25, 0.0625, -0.4375, 0.4375},
     },
     _punch = function(self, target, delay, capabilities)
-      if minetest.global_exists("status_mod") and status_mod.registered_status and status_mod.registered_status['poisoned'] and target.get_player_name then
+      if minetest.global_exists('status_mod') and status_mod.registered_status and status_mod.registered_status['poisoned'] and target.get_player_name then
         local player_name = target:get_player_name()
         local armor = target:get_armor_groups()
         if not (player_name and armor) then

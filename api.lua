@@ -999,11 +999,7 @@ function nmobs:take_punch(puncher, time_from_last_punch, tool_capabilities, dir,
 		end
 
 		if player_name and puncher:get_inventory() then
-			for _, drop in ipairs(self._drops) do
-				if drop.name and minetest.registered_items[drop.name] and (not drop.chance or math.random(1, drop.chance) == 1) then
-					puncher:get_inventory():add_item("main", ItemStack(drop.name.." "..math.random((drop.min or 1), (drop.max or 1))))
-				end
-			end
+			nmobs:give_drops(self._drops, puncher)
 
 			-- Give extra loot for (positionally) tough mobs.
 			if self._difficulty and good_loot_table then
@@ -1171,11 +1167,25 @@ function nmobs.abm_callback(name, pos, node, active_object_count, active_object_
 end
 
 
+function nmobs:give_drops(drops, receiver)
+	if not receiver or type(drops) ~= 'table' then
+		return
+	end
+
+	for _, drop in ipairs(drops) do
+		if drop.name and minetest.registered_items[drop.name]
+			and (not drop.chance or math.random(1, drop.chance) == 1) then
+			receiver:get_inventory():add_item("main", ItemStack(drop.name.." "..math.random((drop.min or 1), (drop.max or 1))))
+		end
+	end
+end
+
+
 function nmobs:on_rightclick(clicker)
 	local player_name = clicker:get_player_name()
 
 	if not self._tames then
-		minetest.chat_send_player(player_name, 'You can\'t tame a '..self._printed_name..' that way.')
+		--minetest.chat_send_player(player_name, 'You can\'t tame a '..self._printed_name..' that way.')
 
 		if self._sound then
 			minetest.sound_play(self._sound, {object = self.object})
@@ -1185,14 +1195,24 @@ function nmobs:on_rightclick(clicker)
 	end
 
 	-- check item
-	--local hand = clicker:get_wielded_item()
+	local wield
+	local hand = clicker:get_wielded_item()
+	if hand then
+		wield = hand:get_name()
+	end
 
-	if not self._owner then
+	if not self._owner and self._tames_match[wield] and hand:get_count() >= self._tames_match[wield] then
+		hand:set_count(hand:get_count() - self._tames_match[wield])
+		clicker:set_wielded_item(hand)
 		self._state = 'following'
 		self._owner = clicker:get_player_name()
 		minetest.chat_send_player(player_name, 'You have tamed the '..self._printed_name..'.')
 		return
-	elseif self._owner == player_name then
+	elseif self._owner == player_name and self._tames_match[wield] and hand:get_count() >= self._tames_match[wield] then
+		if self._tames_match[wield] > 2 then
+			hand:set_count(hand:get_count() - 1)
+			clicker:set_wielded_item(hand)
+		end
 		if self._state == 'following' then
 			self._tether = self.object:get_pos()
 			self._state = 'standing'
@@ -1203,6 +1223,26 @@ function nmobs:on_rightclick(clicker)
 			self._state = 'following'
 			return
 		end
+	elseif (not self._owner or self._owner == player_name)
+	and type(self._right_click) == 'table' then
+		local t = minetest.get_gametime()
+		if t - (self._last_right or -180) > 180 and clicker:get_inventory() then
+			for _, click_table in pairs(self._right_click) do
+				if not click_table.item or wield == click_table.item then
+					if click_table.trade then
+						clicker:set_wielded_item(click_table.drops[1])
+					else
+						nmobs:give_drops(click_table.drops, clicker)
+					end
+					self._last_right = t
+					break
+				end
+			end
+		elseif self._sound then
+			minetest.sound_play(self._sound, {object = self.object})
+		end
+	elseif type(self._right_click) == 'function' then
+		self._right_click(clicker)
 	elseif self._sound then
 		minetest.sound_play(self._sound, {object = self.object})
 	end
@@ -1422,6 +1462,7 @@ function nmobs.register_mob(def)
 		_reach_eff = math.ceil((good_def.reach or 3.5) + math.max(0, cbox[4], cbox[6])),
 		_replace = good_def._replace or nmobs.replace,
 		_replaces = good_def.replaces,
+		_right_click = good_def._right_click,
 		_run_speed = (good_def.run_speed or 3),
 		_run_scared = good_def._run_scared or nmobs.run_scared,
 		_scared = good_def.scared,
@@ -1432,7 +1473,8 @@ function nmobs.register_mob(def)
 		_stand = good_def._stand or nmobs.stand,
 		_state = 'standing',
 		_status_effects = {},
-		_tames = good_def.tames,
+		_tames = good_def.tames or {},
+		_tames_match = {},
 		_target = nil,
 		_terrain_effects = good_def._terrain_effects or nmobs.terrain_effects,
 		_travel = good_def._travel or nmobs.travel,
@@ -1449,6 +1491,12 @@ function nmobs.register_mob(def)
 		proto.visual = 'mesh'
 		proto.mesh = good_def.mesh
 		proto.textures = good_def.textures
+	end
+
+	for i, v in pairs(proto._tames) do
+		local o, n = v:match('([%a%d%:%_%-]+)( *[%d]*)')
+		print(proto._name, v, n, o)
+		proto._tames_match[o] = tonumber(n) or 1
 	end
 
 	for _, e in pairs(proto._environment) do
