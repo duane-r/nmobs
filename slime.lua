@@ -1,36 +1,47 @@
 -- Nmobs slime.lua
--- Copyright Duane Robertson (duane@duanerobertson.com), 2017
+-- Copyright Duane Robertson (duane@duanerobertson.com), 2017, 2019
 -- Distributed under the LGPLv2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
 -- The nodebox and textures are distributed as Public Domain (WTFPL).
 
 
-nmobs.register_mob({
-  attacks_player = true,
-  damage = 0.2,
-  environment = {'default:stone', 'mapgen:stone_with_algae', 'mapgen:stone_with_lichen', 'mapgen:stone_with_moss', 'default:cobble', 'default:mossycobble'},
-  glow = 2,
-  hit_dice = 2,
-  name = 'slime_green',
-  nodebox = {
-    {-0.5, -0.5, -0.5, 0.5, -0.45, 0.5},
-  },
-  reach = 0,
-  run_speed = 0.2,
-  spawn = {
-    {
-      nodes = {'default:stone', 'mapgen:stone_with_algae', 'mapgen:stone_with_lichen', 'mapgen:stone_with_moss', 'default:cobble', 'default:mossycobble'},
-      rarity = 20000,
-    },
-    {
-      nodes = {'mapgen:puddle_ooze'},
-      rarity = 20,
-    },
-  },
-  walk_speed = 0.2,
+do
+	local slime_nodebox = {
+		{ -0.5, -0.5, -0.5, 0.5, -0.45, 0.5 },
+	}
 
-  -- can't be hurt by weapons
-  _take_punch = function()
-    return true
-  end
-})
+	nmobs.register_mob({
+		attacks_player = true,
+		damage = 0.2,
+		environment = { 'group:natural_stone', },
+		glow = 2,
+		hit_dice = 2,
+		name = 'green_slime',
+		nodebox = slime_nodebox,
+		reach = 0,
+		replaces = {
+			{
+				replace = { 'group:natural_stone', },
+				under_air = true,
+				when = 10,
+				with = { 'nmobs:slimy_stone', },
+			}
+		},
+		run_speed = 0.2,
+		spawn = {
+			{
+				nodes = { 'group:natural_stone' },
+			},
+			{
+				nodes = { 'nmobs:slimy_stone' },
+				rarity = 50,
+			},
+		},
+		walk_speed = 0.2,
+
+		-- can't be hurt by weapons
+		_take_punch = function()
+			return true
+		end
+	})
+end

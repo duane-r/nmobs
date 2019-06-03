@@ -1,5 +1,5 @@
 -- Nmobs otik.lua
--- Copyright Duane Robertson (duane@duanerobertson.com), 2017
+-- Copyright Duane Robertson (duane@duanerobertson.com), 2017, 2019
 -- Distributed under the LGPLv2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
 -- Otik is based on the Otesánek or "Greedy Guts", a Czechoslovakian
@@ -14,31 +14,37 @@
 -- http://creativecommons.org/licenses/by-sa/3.0/
 
 
-nmobs.register_mob({
-  attacks_player = true,
-  armor_class = 4,
-  drops = {
-    {name = 'default:wood',},
-  },
-  environment = {'default:leaves', 'default:pine_needles', 'default:dirt_with_rainforest_litter'},
-  hit_dice = 3,
-  looks_for = {'group:snappy', 'group:wood'},
-  name = 'otik',
-  nodebox = {
-    {-0.25, -0.5, -0.25, 0.25, 0.5, 0.25},
-    {-0.125, 0, 0.25, 0.125, 0.0625, 0.3125},
-    {-0.5, 0.0625, -0.125, -0.25, 0.125, -0.0625},
-    {-0.375, 0.125, -0.125, -0.3125, 0.375, -0.0625},
-    {0.25, 0.125, 0.0625, 0.3125, 0.375, 0.125},
-    {0.3125, -0.1875, 0.0625, 0.375, 0.1875, 0.125},
-    {0.375, -0.375, 0.0625, 0.4375, -0.125, 0.125},
-    {-0.125, 0.3125, 0.25, 0.125, 0.375, 0.3125},
-    {-0.1875, 0, 0.25, -0.125, 0.375, 0.3125},
-    {0.125, 0, 0.25, 0.1875, 0.375, 0.3125},
-  },
-  replaces = {
-    {
-      replace = {'group:snappy', 'group:wood'},
-    }
-  },
-})
+do
+	local otik_nodebox = {
+		{ -0.25, -0.5, -0.25, 0.25, 0.5, 0.25 },
+		{ -0.125, 0, 0.25, 0.125, 0.0625, 0.3125 },
+		{ -0.5, 0.0625, -0.125, -0.25, 0.125, -0.0625 },
+		{ -0.375, 0.125, -0.125, -0.3125, 0.375, -0.0625 },
+		{ 0.25, 0.125, 0.0625, 0.3125, 0.375, 0.125 },
+		{ 0.3125, -0.1875, 0.0625, 0.375, 0.1875, 0.125 },
+		{ 0.375, -0.375, 0.0625, 0.4375, -0.125, 0.125 },
+		{ -0.125, 0.3125, 0.25, 0.125, 0.375, 0.3125 },
+		{ -0.1875, 0, 0.25, -0.125, 0.375, 0.3125 },
+		{ 0.125, 0, 0.25, 0.1875, 0.375, 0.3125 },
+	}
+
+	nmobs.register_mob({
+		attacks_player = true,
+		armor_class = 4,
+		drops = {
+			{ name = 'default:wood', },
+		},
+		environment = { 'default:dirt_with_grass', 'default:dirt_with_rainforest_litter', 'default:dirt_with_coniferous_litter' },
+		hit_dice = 3,
+		looks_for = { 'group:snappy', 'group:wood' },
+		name = 'otik',
+		nocturnal = true,
+		nodebox = otik_nodebox,
+		replaces = {
+			{
+				replace = { 'group:snappy', 'group:wood' },
+				when = 50,
+			}
+		},
+	})
+end

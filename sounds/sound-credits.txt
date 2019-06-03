@@ -10,3 +10,7 @@ http://opengameart.org/content/sheep-sound-bleats-yo-frankie
 License:CC-BY-3.0
 https://creativecommons.org/licenses/by/3.0/
 ---------------------------------------------- 
+
+Chicken sounds are copied from mobs_redo.
+-- Sounds Copyright (c) 2014 Krupnov Pavel and 2016 TenPlus1
+-- Distributed under the MIT license

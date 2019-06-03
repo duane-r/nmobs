@@ -5,25 +5,24 @@
 -- stun/fear statuses
 
 nmobs = {}
-nmobs = nmobs
-nmobs.version = "20171028"
-nmobs.path = minetest.get_modpath(minetest.get_current_modname())
-nmobs.world = minetest.get_worldpath()
-nmobs.mobs = {}
+local mod = nmobs
+mod.version = "20171028"
+mod.path = minetest.get_modpath(minetest.get_current_modname())
+mod.world = minetest.get_worldpath()
+mod.mobs = {}
 
 
 local creative_mode = minetest.settings:get_bool('creative_mode')
 local damage_mode = minetest.settings:get_bool('enable_damage')
-print('damage_mode' .. dump(damage_mode))
 
 
-nmobs.nice_mobs = minetest.settings:get_bool('nmobs_nice_mobs') or creative_mode or not damage_mode
-if nmobs.nice_mobs == nil then
-	nmobs.nice_mobs = true
+mod.nice_mobs = minetest.settings:get_bool('nmobs_nice_mobs') or creative_mode or not damage_mode
+if mod.nice_mobs == nil then
+	mod.nice_mobs = true
 end
 
 
-if nmobs.nice_mobs then
+if mod.nice_mobs then
   print('Nmobs: All mobs will play nicely.')
 end
 
@@ -50,39 +49,78 @@ function vector.horizontal_distance(p1, p2)
 end
 
 
-dofile(nmobs.path .. "/api.lua")
+-- This tables looks up nodes that aren't already stored.
+mod.node = setmetatable({}, {
+	__index = function(t, k)
+		if not (t and k and type(t) == 'table') then
+			return
+		end
+
+		t[k] = minetest.get_content_id(k)
+		return t[k]
+	end
+})
+
+
+mod.node_name = setmetatable({}, {
+	__index = function(t, k)
+		if not (t and k and type(t) == 'table') then
+			return
+		end
+
+		t[k] = minetest.get_name_from_content_id(k)
+		return t[k]
+	end
+})
+
+
+function mod.clone_node(name)
+	if not (name and type(name) == 'string') then
+		return
+	end
+	if not minetest.registered_nodes[name] then
+		return
+	end
+
+	local nod = minetest.registered_nodes[name]
+	local node2 = table.copy(nod)
+	return node2
+end
+
+
+dofile(mod.path .. "/api.lua")
 
 minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing)
-	if nmobs:in_combat(user) then
+	if mod:in_combat(user) then
 		return itemstack
 	end
 end)
 
 
-dofile(nmobs.path .. "/ape.lua")
-dofile(nmobs.path .. "/bear.lua")
-dofile(nmobs.path .. "/bee.lua")
-dofile(nmobs.path .. "/boulder.lua")
---dofile(nmobs.path .. "/bunny.lua")
-dofile(nmobs.path .. "/chicken.lua")
-dofile(nmobs.path .. "/cow.lua")
-dofile(nmobs.path .. "/demon.lua")
-dofile(nmobs.path .. "/fox.lua")
-dofile(nmobs.path .. "/goat.lua")
-dofile(nmobs.path .. "/goblin.lua")
-dofile(nmobs.path .. "/jackel_guardian.lua")
-dofile(nmobs.path .. "/kangaroo.lua")
-dofile(nmobs.path .. "/lion.lua")
-dofile(nmobs.path .. "/lizard.lua")
-dofile(nmobs.path .. "/nodes.lua")
-dofile(nmobs.path .. "/otik.lua")
-dofile(nmobs.path .. "/pig.lua")
-dofile(nmobs.path .. "/rat.lua")
-dofile(nmobs.path .. "/scorpion.lua")
-dofile(nmobs.path .. "/shark.lua")
-dofile(nmobs.path .. "/sheep.lua")
-dofile(nmobs.path .. "/skeleton.lua")
-dofile(nmobs.path .. "/slime.lua")
-dofile(nmobs.path .. "/snake.lua")
-dofile(nmobs.path .. "/spider.lua")
---dofile(nmobs.path .. "/zombie.lua")
+dofile(mod.path .. "/ape.lua")
+dofile(mod.path .. "/bear.lua")
+dofile(mod.path .. "/bee.lua")
+dofile(mod.path .. "/boulder.lua")
+--dofile(mod.path .. "/bunny.lua")
+dofile(mod.path .. "/chicken.lua")
+dofile(mod.path .. "/cow.lua")
+dofile(mod.path .. "/demon.lua")
+dofile(mod.path .. "/fox.lua")
+dofile(mod.path .. "/goat.lua")
+dofile(mod.path .. "/goblin.lua")
+dofile(mod.path .. "/jackel_guardian.lua")
+dofile(mod.path .. "/kangaroo.lua")
+dofile(mod.path .. "/lion.lua")
+dofile(mod.path .. "/lizard.lua")
+dofile(mod.path .. "/nodes.lua")
+dofile(mod.path .. "/otik.lua")
+dofile(mod.path .. "/pig.lua")
+dofile(mod.path .. "/rat.lua")
+dofile(mod.path .. "/scorpion.lua")
+dofile(mod.path .. "/shark.lua")
+dofile(mod.path .. "/sheep.lua")
+dofile(mod.path .. "/skeleton.lua")
+dofile(mod.path .. "/slime.lua")
+dofile(mod.path .. "/snake.lua")
+dofile(mod.path .. "/spider.lua")
+--dofile(mod.path .. "/zombie.lua")
