@@ -48,7 +48,6 @@ do
 		name = 'cockatrice',
 		nodebox = chicken_nodebox,
 		run_speed = 3,
-		scared = true,
 		size = 1,
 		sound = 'mobs_chicken',
 		tames = { 'farming:seed_wheat' },
