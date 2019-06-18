@@ -49,6 +49,6 @@ do
 		hit_dice = 4,
 		name = 'giant_lizard',
 		nodebox = lizard_nodebox,
-		size = 4,
+		size = 3,
 	})
 end

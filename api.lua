@@ -11,7 +11,7 @@ local mod = nmobs
 local mod_name = 'nmobs'
 
 
-local DEBUG
+local DEBUG = false
 
 local anger_follow_time = 30
 local bored_with_standing = 10
@@ -321,9 +321,13 @@ function mod:fall()  -- self._fall
 end
 
 
+---------------------------------------------
+-- Check this...
+---------------------------------------------
 function mod:in_combat(player)
 	for n, v in pairs(minetest.luaentities) do
-		if v._target == player and v._state ~= 'fleeing' then
+		if v._target == player and v._state ~= 'fleeing' and v._state ~= 'scared' then
+			--print(n, dump(v), dump(v.object))
 			return true
 		end
 	end

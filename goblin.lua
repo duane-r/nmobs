@@ -290,7 +290,7 @@ do
 		description = 'Diamond Trap',
 		tiles = { 'default_cobble.png^default_mineral_diamond.png' },
 		groups = { cracky = 3, trap = 1, explosive_trap = 1 },
-		drop = 'default:diamond_lump',
+		drop = 'default:diamond',
 		is_ground_content = false,
 		sounds = default.node_sound_stone_defaults(),
 	})

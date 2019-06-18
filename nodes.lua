@@ -153,7 +153,7 @@ do
 	local cnode = nmobs.clone_node('default:stone')
 	cnode.tiles = { 'default_stone.png^nmobs_slimy.png' }
 	cnode.description = 'Slimy stone'
-	cnode.light_source = 2
+	cnode.light_source = 4
 	cnode.drop = nil
 	minetest.register_node('nmobs:slimy_stone', cnode)
 

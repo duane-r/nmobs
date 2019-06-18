@@ -21,13 +21,13 @@ do
 		reach = 0,
 		replaces = {
 			{
-				replace = { 'group:natural_stone', },
+				replace = { 'group:stone', },
 				under_air = true,
 				when = 10,
 				with = { 'nmobs:slimy_stone', },
 			}
 		},
-		run_speed = 0.2,
+		run_speed = 0.5,
 		spawn = {
 			{
 				nodes = { 'group:natural_stone' },

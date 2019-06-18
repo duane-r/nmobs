@@ -46,7 +46,7 @@ do
 		replaces = {
 			{
 				replace = { 'group:leaves', },
-				when = 50,
+				when = 200,
 				with = { 'nmobs:bee_hive', },
 			}
 		},
