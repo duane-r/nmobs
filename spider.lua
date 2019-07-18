@@ -72,7 +72,7 @@ do
 		environment = { 'default:desert_stone', 'group:sand' },
 		hit_dice = 4,
 		name = 'giant_tarantula',
-		nocturnal = true,
+		--nocturnal = true,
 		nodebox = spider_nodebox,
 		run_speed = 3,
 		size = 2,
@@ -94,9 +94,17 @@ do
 		environment = { 'group:natural_stone', },
 		glow = 2,
 		hit_dice = 4,
-		lower_than = -10,
+		--lower_than = -10,
 		name = 'deep_spider',
 		nodebox = spider_nodebox,
+		replaces = {
+			{
+				replace = { 'air', },
+				floor = true,
+				when = 50,
+				with = { 'mobs:cobweb', },
+			}
+		},
 		run_speed = 3,
 		size = 2,
 		sound = 'mobs_spider',

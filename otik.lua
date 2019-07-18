@@ -38,7 +38,7 @@ do
 		hit_dice = 3,
 		looks_for = { 'group:snappy', 'group:wood' },
 		name = 'otik',
-		nocturnal = true,
+		--nocturnal = true,
 		nodebox = otik_nodebox,
 		replaces = {
 			{

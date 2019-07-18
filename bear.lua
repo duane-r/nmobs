@@ -31,7 +31,7 @@ do
 		environment = { 'default:dirt_with_grass', 'default:dirt_with_coniferous_litter' },
 		hit_dice = 6,
 		name = 'brown_bear',
-		nocturnal = true,
+		--nocturnal = true,
 		nodebox = bear_nodebox,
 		size = 2,
 	})
@@ -47,7 +47,7 @@ do
 		environment = { 'default:snow', 'default:dirt_with_snow' },
 		hit_dice = 8,
 		name = 'polar_bear',
-		nocturnal = true,
+		--nocturnal = true,
 		nodebox = bear_nodebox,
 		size = 2.5,
 	})
@@ -64,7 +64,7 @@ do
 		glow = 2,
 		hit_dice = 6,
 		name = 'cave_bear',
-		nocturnal = true,
+		--nocturnal = true,
 		nodebox = bear_nodebox,
 		size = 1,
 	})

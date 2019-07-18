@@ -327,7 +327,9 @@ end
 function mod:in_combat(player)
 	for n, v in pairs(minetest.luaentities) do
 		if v._target == player and v._state ~= 'fleeing' and v._state ~= 'scared' then
-			--print(n, dump(v), dump(v.object))
+			if DEBUG then
+				print(n, dump(v), dump(v.object:get_entity_name()))
+			end
 			return true
 		end
 	end

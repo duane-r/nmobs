@@ -43,6 +43,6 @@ do
 		hit_dice = 3,
 		name = 'scorpion',
 		nodebox = scorpion_nodebox,
-		nocturnal = true,
+		--nocturnal = true,
 	})
 end

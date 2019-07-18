@@ -23,7 +23,7 @@ do
 			{
 				replace = { 'group:stone', },
 				under_air = true,
-				when = 10,
+				when = 25,
 				with = { 'nmobs:slimy_stone', },
 			}
 		},

@@ -32,7 +32,7 @@ do
 		hit_dice = 3,
 		name = 'skeleton',
 		nodebox = skeleton_nodebox,
-		nocturnal = true,
+		--nocturnal = true,
 		size = 2,
 	})
 end

@@ -1,10 +1,10 @@
 
-Parts of nmobs are derived from TenPlus1's mobs_redo,
-copyright 2014 Krupnov Pavel and 2016 TenPlus1. Mainly bits of
-the bee.lua and cow.lua. They were originally distributed under
-the MIT license.
+The "mobs_redo.lua" file is derived from TenPlus1's mobs_redo,
+copyright 2014 Krupnov Pavel and 2016 TenPlus1. It is distributed
+under the MIT license. (See the file for details.)
 
-https://forum.minetest.net/viewtopic.php?f=11&t=9917
+
+Everything else falls under the LGPL 2.1:
 
 
 
