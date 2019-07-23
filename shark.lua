@@ -30,7 +30,7 @@ do
 		hit_dice = 2,
 		name = 'shark_1',
 		nodebox = shark_nodebox,
-		--rarity = 5000,
+		rarity = 50000,
 		size = 2,
 		--vision = 6,
 	})

@@ -13,6 +13,15 @@ local mod_name = 'nmobs'
 
 local DEBUG = false
 
+local low_debug
+do
+	local f = io.open(mod.path..'/duane', 'r')
+
+	if f then
+		low_debug = true
+	end
+end
+
 local anger_follow_time = 30
 local bored_with_standing = 10
 local bored_with_walking = 20
@@ -35,7 +44,7 @@ local max_mobs_per_type = 4
 -- These relate to making mobs tougher at the outer edges
 --  of the world.
 local good_loot_chance = 10  -- chance = floor(difficulty - 1) / n
-local maximum_multiplier = 5  -- Set this to change the maximum difficulty.
+local maximum_multiplier = 8  -- Set this to change the maximum difficulty.
 local minimum_multiplier = 1  -- Set this to change the minimum difficulty.
 local speed_factor = 0.5  -- Mob speed increases by n * difficulty (2.5).
 
@@ -326,8 +335,8 @@ end
 ---------------------------------------------
 function mod:in_combat(player)
 	for n, v in pairs(minetest.luaentities) do
-		if v._target == player and v._state ~= 'fleeing' and v._state ~= 'scared' then
-			if DEBUG then
+		if v._target == player and v._state == 'fighting' and vector.distance(player:get_pos(), v:_get_pos()) < 10 then
+			if low_debug or DEBUG then
 				print(n, dump(v), dump(v.object:get_entity_name()))
 			end
 			return true
@@ -1107,10 +1116,10 @@ function mod:activate(staticdata, dtime_s)
 		end
 
 		-- This keeps sky realm mobs from becoming harder.
-		--local y = (pos.y > 0) and 0 or pos.y
+		local y = math.min(pos.y, 0)
 
-		-- Make mobs at top and bottom of the world tougher (even bunnies).
-		local factor = 1 + (math.abs(pos.y) * minimum_multiplier / hardness)
+		-- Make mobs at edges of the world tougher (even bunnies).
+		local factor = 1 + (math.max(math.abs(pos.x), math.abs(y), math.abs(pos.z)) * minimum_multiplier / hardness)
 
 		hp = math.floor(hp * factor + 0.5)
 		self._hp = hp
@@ -1122,7 +1131,7 @@ function mod:activate(staticdata, dtime_s)
 		self._run_speed = self._run_speed * math.max(math.min(self._walk_speed, 1), speed_factor * factor)
 		self._difficulty = factor
 
-		if DEBUG then
+		if low_debug or DEBUG then
 			print(mod_name..': activated a '..self._printed_name..' with '..hp..' HP (factor: '..(math.floor(factor * 100) / 100)..') at ('..pos.x..','..pos.y..','..pos.z..'). Game time: '..self._born)
 		end
 	end
@@ -1202,10 +1211,17 @@ function mod:give_drops(drops, receiver)
 		return
 	end
 
+	local player_name = receiver:get_player_name()
+
 	for _, drop in ipairs(drops) do
 		if drop.name and minetest.registered_items[drop.name]
 			and (not drop.chance or math.random(1, drop.chance) == 1) then
-			receiver:get_inventory():add_item("main", ItemStack(drop.name.." "..math.random((drop.min or 1), (drop.max or 1))))
+			local stack = ItemStack(drop.name.." "..math.random((drop.min or 1), (drop.max or 1)))
+			if receiver:get_inventory():add_item("main", stack) then
+				minetest.chat_send_player(player_name, 'You receive: ' .. stack:to_string())
+			else
+				minetest.chat_send_player(player_name, 'Your inventory is full.')
+			end
 		end
 	end
 end

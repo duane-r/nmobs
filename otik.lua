@@ -32,18 +32,21 @@ do
 		attacks_player = true,
 		armor_class = 4,
 		drops = {
-			{ name = 'default:wood', },
+			{ name = 'default:wood', max = 3 },
+			{ name = 'default:stick', max = 3 },
+			{ name = 'default:apple', max = 3 },
+			{ name = 'mapgen:acorns', max = 6 },
 		},
 		environment = { 'default:dirt_with_grass', 'default:dirt_with_rainforest_litter', 'default:dirt_with_coniferous_litter' },
 		hit_dice = 3,
 		looks_for = { 'group:snappy', 'group:wood' },
 		name = 'otik',
-		--nocturnal = true,
+		nocturnal = true,
 		nodebox = otik_nodebox,
 		replaces = {
 			{
 				replace = { 'group:snappy', 'group:wood' },
-				when = 50,
+				when = 200,
 			}
 		},
 	})

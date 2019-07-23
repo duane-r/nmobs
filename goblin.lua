@@ -6,7 +6,7 @@
 
 
 nmobs.time_factor = nmobs.time_factor or 10
-local terrain_mod = 'environ'
+local terrain_mod = 'mapgen'
 
 
 local drops = {
@@ -52,6 +52,17 @@ local function goblin_replace(self)
 		end
 	end
 
+	ns = minetest.find_nodes_in_area(minp, maxp, { 'default:torch', })
+	if ns and #ns > 0 then
+		local p = ns[math.random(#ns)]
+		local n = minetest.get_node_or_nil(p)
+		if n then
+			minetest.remove_node(p)
+			--print('nmobs: A goblin steals a torch at ('..p.x..','..p.y..','..p.z..').')
+			return
+		end
+	end
+
 	if math.random(3) == 1 then
 		ns = minetest.find_nodes_in_area(minp, maxp, { terrain_mod .. ':giant_mushroom_stem' })
 		if ns and #ns > 0 then
@@ -65,8 +76,9 @@ local function goblin_replace(self)
 				local n = minetest.get_node_or_nil(pl)
 				if n and (n.name == terrain_mod .. ':giant_mushroom_stem' or n.name == terrain_mod .. ':giant_mushroom_cap' or n.name == terrain_mod .. ':huge_mushroom_cap') then
 					minetest.remove_node(pl)
-					pl.y = pl.y + 1
+					break
 				end
+				pl.y = pl.y + 1
 			end
 
 			return
@@ -83,7 +95,7 @@ local function goblin_replace(self)
 	end
 	--]]
 
-	if math.random(5) == 1 then
+	if math.random(3) == 1 then
 		local p = minetest.find_node_near(pos, self._reach + 1, { 'air' })
 		if p then
 			minetest.set_node(p, { name='nmobs:fairy_light' })
@@ -176,7 +188,7 @@ do
 
 	drops = table.copy(drops)
 	drops[#drops+1] = { name = 'default:coal_lump', chance = 2, max = 2 }
-	drops[#drops+1] = { name = 'default:copper_lump', chance = 4, max = 2 }
+	--drops[#drops+1] = { name = 'default:copper_lump', chance = 4, max = 2 }
 	drops[#drops+1] = { name = 'default:iron_lump', chance = 6, max = 2 }
 
 	nmobs.register_mob({

@@ -39,7 +39,11 @@ do
 		armor_class = 8,
 		attacks_player = true,
 		damage = 3,
-		--drops = { { name = 'mobs:meat_raw' }, },
+		drops = {
+			{ name = 'default:cobble', chance = 2 },
+			{ name = 'default:iron_lump', chance = 4 },
+			{ name = 'default:diamond', chance = 16 },
+		},
 		environment = {
 			'group:natural_stone',
 			'default:dirt_with_rainforest_litter',
@@ -50,7 +54,7 @@ do
 		run_speed = 3,
 		size = 1,
 		sound = 'mobs_chicken',
-		tames = { 'farming:seed_wheat' },
+		--tames = { 'farming:seed_wheat' },
 		vision = 6,
 		walk_speed = 1,
 	})

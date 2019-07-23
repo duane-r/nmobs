@@ -72,7 +72,7 @@ do
 		environment = { 'default:desert_stone', 'group:sand' },
 		hit_dice = 4,
 		name = 'giant_tarantula',
-		--nocturnal = true,
+		nocturnal = true,
 		nodebox = spider_nodebox,
 		run_speed = 3,
 		size = 2,
