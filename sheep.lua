@@ -25,6 +25,7 @@ do
 		drops = {
 			{ name = 'mobs:meat_raw', },
 			{ name = 'wool:white', chance = 2, },
+			{ name = 'mobs:leather', chance = 8 },
 		},
 		environment = { 'default:dirt_with_grass' },
 		hit_dice = 1,

@@ -23,7 +23,7 @@ do
 			{ name = 'default:stone', min=3, max=10 },
 			{ name = 'default:coal_lump', chance = 3 },
 			{ name = 'default:iron_lump', chance = 4 },
-			{ name = 'default:copper_lump', chance = 5 },
+			--{ name = 'default:copper_lump', chance = 5 },
 			{ name = 'default:gold_lump', chance = 6 },
 			{ name = 'default:diamond', chance = 8 },
 			{ name = 'default:mese_crystal_fragment', chance = 10 },

@@ -34,8 +34,10 @@ do
 		drops = {
 			{ name = 'default:wood', max = 3 },
 			{ name = 'default:stick', max = 3 },
-			{ name = 'default:apple', max = 3 },
-			{ name = 'mapgen:acorns', max = 6 },
+			{ name = 'default:apple', max = 3, chance = 3 },
+			{ name = 'mapgen:acorns', max = 6, chance = 3 },
+			{ name = 'farming:seed_wheat', max = 6, chance = 3 },
+			{ name = 'farming:seed_cotton', max = 6, chance = 3 },
 		},
 		environment = { 'default:dirt_with_grass', 'default:dirt_with_rainforest_litter', 'default:dirt_with_coniferous_litter' },
 		hit_dice = 3,

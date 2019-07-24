@@ -31,7 +31,10 @@ do
 
 	nmobs.register_mob({
 		diurnal = true,
-		drops = { { name = 'mobs:meat_raw', }, },
+		drops = {
+			{ name = 'mobs:meat_raw', },
+			{ name = 'mobs:leather', chance = 6 },
+		},
 		environment = { 'default:dirt_with_grass' },
 		hit_dice = 1,
 		media_prefix = 'ccmobs',

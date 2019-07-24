@@ -89,6 +89,28 @@ do
 		inventory_image = 'nmobs_wax.png',
 	})
 
+	minetest.register_node('nmobs:candle', {
+		description = 'Beeswax Candle',
+		tiles = { 'nmobs_candle.png' },
+		drawtype = 'plantlike',
+		use_texture_alpha = true,
+		inventory_image = 'nmobs_candle.png',
+		light_source = 10,
+		groups = { snappy = 3, dig_immediate = 3 },
+        selection_box = {
+            type = "fixed",
+            fixed = {
+                {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+            },
+        },
+	})
+
+	minetest.register_craft({
+		output = 'nmobs:candle 10',
+		type = 'shapeless',
+		recipe = { 'nmobs:wax', 'nmobs:wax', 'farming:string', },
+	})
+
 	minetest.register_craftitem(':mobs:honey', {
 		description = 'Honey',
 		inventory_image = 'nmobs_honey.png',
