@@ -76,7 +76,7 @@ do
         drop = {
             max_items = 6,
             items = { {
-                    items = {"mobs:honey 1", "mobs:honey 2", "mobs:honey 4", 'nmobs:wax 2' },
+                    items = {"mobs:honey 1", "mobs:honey 2", "mobs:honey 4", 'mobs:wax 2' },
 			}, },
         },
 		tiles = { 'nmobs_bee_hive.png' },
@@ -84,7 +84,7 @@ do
 		sounds = default.node_sound_dirt_defaults(),
 	})
 
-	minetest.register_craftitem('nmobs:wax', {
+	minetest.register_craftitem(':mobs:wax', {
 		description = 'Wax',
 		inventory_image = 'nmobs_wax.png',
 	})
@@ -108,7 +108,7 @@ do
 	minetest.register_craft({
 		output = 'nmobs:candle 10',
 		type = 'shapeless',
-		recipe = { 'nmobs:wax', 'nmobs:wax', 'farming:string', },
+		recipe = { 'mobs:wax', 'mobs:wax', 'farming:string', },
 	})
 
 	minetest.register_craftitem(':mobs:honey', {

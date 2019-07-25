@@ -58,7 +58,6 @@ local function goblin_replace(self)
 		local n = minetest.get_node_or_nil(p)
 		if n then
 			minetest.remove_node(p)
-			--print('nmobs: A goblin steals a torch at ('..p.x..','..p.y..','..p.z..').')
 			return
 		end
 	end
@@ -123,7 +122,8 @@ local function goblin_replace(self)
 				minetest.set_node(p, { name='default:mossycobble' })
 			end
 		elseif n and minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].groups.soil then
-			minetest.set_node(pos, { name='flowers:mushroom_brown' })
+			local n = 'flowers:mushroom_brown' 
+			minetest.set_node(pos, { name = n })
 		end
 	end
 end
@@ -252,7 +252,8 @@ do
 		on_timer = function(pos, elapsed)
 			local node_down = minetest.get_node_or_nil({ x=pos.x, y=pos.y-1, z=pos.z })
 			if node_down and node_down.name == 'default:dirt' then
-				minetest.set_node(pos, { name=mushrooms[math.random(#mushrooms)]})
+				local n = mushrooms[math.random(#mushrooms)]
+				minetest.set_node(pos, { name = n })
 			else
 				minetest.remove_node(pos)
 			end
