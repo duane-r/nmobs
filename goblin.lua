@@ -195,6 +195,7 @@ do
 		armor_class = 8,
 		attacks_player = true,
 		can_dig = { 'group:cracky', 'group:crumbly' },
+		damage = 2,
 		drops = drops,
 		environment = { 'default:mossycobble', 'default:dirt', 'group:natural_stone', terrain_mod .. ':giant_mushroom_stem' },
 		hit_dice = 4,

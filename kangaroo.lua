@@ -28,6 +28,7 @@ do
 		damage = 0.5,
 		drops = {
 			{ name = 'mobs:meat_raw', },
+			{ name = 'mobs:leather', chance = 6, },
 		},
 		environment = { 'default:dirt_with_dry_grass' },
 		hit_dice = 1,

@@ -440,8 +440,9 @@ function mod:punch(target, delay, capabilities)  -- self._punch
 		return
 	end
 
-	if math.random(10) == 1 then
+	if math.random(6) == 1 then
 		target:set_hp(target:get_hp() - 1)
+		return
 	end
 	return target:punch(self.object, delay, capabilities, nil)
 end

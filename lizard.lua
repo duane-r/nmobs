@@ -44,6 +44,7 @@ do
 		damage = 0.5,
 		drops = {
 			{ name = 'mobs:meat_raw', },
+			{ name = 'mobs:leather', },
 		},
 		environment = { 'default:stone', 'default:dirt_with_dry_grass' },
 		hit_dice = 4,
