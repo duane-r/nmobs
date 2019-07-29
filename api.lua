@@ -21,6 +21,7 @@ do
 		low_debug = true
 	end
 end
+low_debug = nil
 
 local anger_follow_time = 30
 local bored_with_standing = 10
@@ -142,9 +143,14 @@ local elixirs_mod = minetest.get_modpath('elixirs')
 
 local layers
 local layer_size = 6000
-if minetest.get_mapgen_setting('mg_name') == 'flat' and minetest.get_mapgen_setting('mgflat_spflags'):find('layers') and not minetest.get_mapgen_setting('mgflat_spflags'):find('nolayers') then
-	print(mod_name..': Adjusting altitude for multiple worlds.')
-	layers = true
+do
+	local mg_name = minetest.get_mapgen_setting('mg_name')
+	local mg_flat_set = minetest.get_mapgen_setting('mgflat_spflags')
+	if mg_name == 'flat' and mg_flat_set and mg_flat_set:find('layers')
+	and not mg_flat_set:find('nolayers') then
+		print(mod_name..': Adjusting altitude for multiple worlds.')
+		layers = true
+	end
 end
 
 
