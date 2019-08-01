@@ -31,6 +31,7 @@ do
 		damage = 0.5,
 		drops = {
 			{ name = 'mobs:meat_raw', },
+			{ name = 'mobs:leather', chance = 10, },
 		},
 		environment = { 'default:dirt_with_rainforest_litter', 'default:sand' },
 		hit_dice = 1,
@@ -43,7 +44,7 @@ do
 		attacks_player = 20,
 		damage = 0.5,
 		drops = {
-			{ name = 'mobs:meat_raw', },
+			{ name = 'mobs:meat_raw', max = 2, },
 			{ name = 'mobs:leather', },
 		},
 		environment = { 'default:stone', 'default:dirt_with_dry_grass' },

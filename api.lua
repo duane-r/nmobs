@@ -14,6 +14,7 @@ local mod_name = 'nmobs'
 local DEBUG = false
 
 local low_debug
+--[[
 do
 	local f = io.open(mod.path..'/duane', 'r')
 
@@ -21,7 +22,7 @@ do
 		low_debug = true
 	end
 end
-low_debug = nil
+--]]
 
 local anger_follow_time = 30
 local bored_with_standing = 10
