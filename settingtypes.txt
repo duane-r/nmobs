@@ -1,2 +1,11 @@
 # Mobs will not attack if you set this to true.
 nmobs_nice_mobs (Nice Mobs) bool false
+
+# Set this to change the minimum difficulty.
+nmobs_min_difficulty (Minimum Difficulty) int 1
+
+# Set this to change the maximum difficulty.
+nmobs_max_difficulty (Maximum Difficulty) int 8
+
+# Set this to make mobs tougher as time goes by. It should equal the number of hours until mobs are at maximum difficulty.
+nmobs_worlds_end (World Duration) int 0

@@ -46,9 +46,10 @@ local max_mobs_per_type = 4
 -- These relate to making mobs tougher at the outer edges
 --  of the world.
 local good_loot_chance = 10  -- chance = floor(difficulty - 1) / n
-local maximum_multiplier = 8  -- Set this to change the maximum difficulty.
-local minimum_multiplier = 1  -- Set this to change the minimum difficulty.
+local maximum_multiplier = mod.maximum_difficulty
+local minimum_multiplier = mod.minimum_difficulty
 local speed_factor = 0.5  -- Mob speed increases by n * difficulty (2.5).
+local worlds_end = mod.worlds_end and mod.worlds_end * 3600
 
 local hardness = (31000 / maximum_multiplier) / minimum_multiplier
 
@@ -1129,16 +1130,24 @@ function mod:activate(staticdata, dtime_s)
 		-- This keeps sky realm mobs from becoming harder.
 		local y = math.min(pos.y, 0)
 
-		-- Make mobs at edges of the world tougher (even bunnies).
-		local factor = 1 + (math.max(math.abs(pos.x), math.abs(y), math.abs(pos.z)) * minimum_multiplier / hardness)
+		local factor = 1
+		if worlds_end then
+			factor = math.max(minimum_multiplier, minetest.get_gametime() * maximum_multiplier / worlds_end)
+		else
+			-- Make mobs at edges of the world tougher (even bunnies).
+			factor = 1 + (math.max(math.abs(pos.x), math.abs(y), math.abs(pos.z)) * minimum_multiplier / hardness)
+		end
 
 		hp = math.floor(hp * factor + 0.5)
 		self._hp = hp
 		self.object:set_hp(self._hp)
 		self._damage = self._damage * factor
+
+		-- This just looks weird.
 		--if change_walk_velocity then
 		--  self._walk_speed = self._walk_speed * math.max(1, speed_factor * factor)
 		--end
+
 		self._run_speed = self._run_speed * math.max(math.min(self._walk_speed, 1), speed_factor * factor)
 		self._difficulty = factor
 

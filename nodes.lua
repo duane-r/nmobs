@@ -32,6 +32,15 @@ do
 		inventory_image = 'nmobs_fur.png',
 	})
 
+	minetest.register_craft({
+		output = 'mobs:leather',
+        type = 'shapeless',
+		recipe = {
+			'mobs:fur',
+			'mobs:fur',
+		}
+	})
+
 	local cnode = nmobs.clone_node('default:stone')
 	cnode.tiles = { 'default_stone.png^nmobs_slimy.png' }
 	cnode.description = 'Slimy stone'

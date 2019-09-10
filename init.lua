@@ -21,6 +21,14 @@ if mod.nice_mobs == nil then
 	mod.nice_mobs = true
 end
 
+mod.minimum_difficulty = tonumber(minetest.settings:get('nmobs_min_difficulty')) or 1
+mod.maximum_difficulty = tonumber(minetest.settings:get('nmobs_max_difficulty')) or 8
+
+mod.worlds_end = tonumber(minetest.settings:get('nmobs_worlds_end'))
+if mod.worlds_end == 0 then
+	mod.worlds_end = nil
+end
+
 
 if mod.nice_mobs then
   print('Nmobs: All mobs will play nicely.')

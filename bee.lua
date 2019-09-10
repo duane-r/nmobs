@@ -76,7 +76,7 @@ do
         drop = {
             max_items = 6,
             items = { {
-                    items = {"mobs:honey 1", "mobs:honey 2", "mobs:honey 4", 'mobs:wax 2' },
+                    items = {"mobs:honey 1", "mobs:honey 2", "mobs:honey 4", 'mobs:wax 3' },
 			}, },
         },
 		tiles = { 'nmobs_bee_hive.png' },
