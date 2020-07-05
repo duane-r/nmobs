@@ -13,7 +13,7 @@ local mod_name = 'nmobs'
 
 local DEBUG = false
 
-local low_debug
+local low_debug = false
 --[[
 do
 	local f = io.open(mod.path..'/duane', 'r')
