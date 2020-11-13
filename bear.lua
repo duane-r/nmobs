@@ -30,6 +30,7 @@ do
 		},
 		environment = { 'default:dirt_with_grass', 'default:dirt_with_coniferous_litter' },
 		hit_dice = 6,
+		lifespan = 100,
 		name = 'brown_bear',
 		--nocturnal = true,
 		nodebox = bear_nodebox,

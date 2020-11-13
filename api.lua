@@ -343,7 +343,7 @@ end
 ---------------------------------------------
 function mod:in_combat(player)
 	for n, v in pairs(minetest.luaentities) do
-		if o.object:get_luaentity() then
+		if v.object:get_luaentity() then
 			if v._target == player and v._state == 'fighting' and vector.distance(player:get_pos(), v:_get_pos()) < 10 then
 				if low_debug or DEBUG then
 					print(n, dump(v), dump(v.object:get_entity_name()))
