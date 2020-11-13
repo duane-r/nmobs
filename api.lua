@@ -343,11 +343,13 @@ end
 ---------------------------------------------
 function mod:in_combat(player)
 	for n, v in pairs(minetest.luaentities) do
-		if v._target == player and v._state == 'fighting' and vector.distance(player:get_pos(), v:_get_pos()) < 10 then
-			if low_debug or DEBUG then
-				print(n, dump(v), dump(v.object:get_entity_name()))
+		if o.object:get_luaentity() then
+			if v._target == player and v._state == 'fighting' and vector.distance(player:get_pos(), v:_get_pos()) < 10 then
+				if low_debug or DEBUG then
+					print(n, dump(v), dump(v.object:get_entity_name()))
+				end
+				return true
 			end
-			return true
 		end
 	end
 end
@@ -1204,10 +1206,12 @@ function mod.abm_callback(name, pos, node, active_object_count, active_object_co
 	local ct = 0
 	mob_count = 0
 	for _, o in pairs(minetest.luaentities) do
-		if o.name == mod_name..':'..name and vector.distance(o.object:get_pos(), pos) < 300 then
-			ct = ct + 1
+		if o.object:get_luaentity() then
+			if o.name == mod_name..':'..name and vector.distance(o.object:get_pos(), pos) < 300 then
+				ct = ct + 1
+			end
+			mob_count = mob_count + 1
 		end
-		mob_count = mob_count + 1
 	end
 
 	if ct > max_mobs_per_type then
