@@ -93,7 +93,7 @@ do
 		description = 'Beeswax Candle',
 		tiles = { 'nmobs_candle.png' },
 		drawtype = 'plantlike',
-		use_texture_alpha = true,
+		use_texture_alpha = 'blend',
 		inventory_image = 'nmobs_candle.png',
 		light_source = 10,
 		groups = { snappy = 3, dig_immediate = 3 },

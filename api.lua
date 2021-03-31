@@ -1387,6 +1387,7 @@ function mod.register_mob(def)
 				type = 'fixed',
 				fixed = good_def.nodebox,
 			},
+			use_texture_alpha = 'blend',
 			tiles = good_def.textures,
 		}
 
